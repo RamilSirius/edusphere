@@ -11,8 +11,8 @@ data analytics or design and finish with a portfolio. Visitors can:
 - enrol online;
 - look up topics in a learning library powered by the Wikipedia API.
 
-- **Live site:** _add the GitHub Pages link here after publishing_
-- **Repository:** _add the GitHub repository link here_
+- **Live site:** https://ramilsirius.github.io/edusphere/
+- **Repository:** https://github.com/RamilSirius/edusphere
 
 ## Team
 
