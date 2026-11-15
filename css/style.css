@@ -1,0 +1,1478 @@
+/* ==========================================================================
+   EduSphere — the one stylesheet of the website
+   Team: The Ethernet (Group SE-2510)
+   Design system & responsive layout: Maxim Batyushkin
+
+   Bootstrap 5.3 (CDN) does the grid, spacing and components. This file is
+   linked after it and adds the EduSphere look: colours, typography, our own
+   components, light / dark mode and the animations.
+
+   TABLE OF CONTENTS
+   01. Design tokens (light mode)            -> :root
+   02. Dark mode                             -> html[data-bs-theme="dark"]
+   03. Base: typography, links, focus, skip link
+   04. Buttons and hover effects
+   05. Navbar, theme switch, user menu
+   06. Page header (inner pages) and section titles
+   07. Cards: features, courses, people, stats
+   08. Course catalogue: search, filters, rating, saved courses
+   09. Forms: validation messages, password meter, auth pages
+   10. Profile page
+   11. Library page (Wikipedia API): results, skeletons, errors
+   12. Schedule, gallery and FAQ
+   13. Footer and newsletter
+   14. Scroll progress, back-to-top, toasts, copy buttons
+   15. Animations (keyframes, reveal on scroll)
+   16. Responsive fine-tuning (media queries)
+   17. Reduced motion
+   ========================================================================== */
+
+
+/* ==========================================================================
+   01. DESIGN TOKENS — LIGHT MODE
+   Our palette is stored in --edu-* variables. Bootstrap reads its colours
+   from --bs-* variables, so we point those at our palette too.
+   ========================================================================== */
+:root {
+  /* brand palette */
+  --edu-indigo: #2f2a77;
+  --edu-indigo-light: #5b54c9;
+  --edu-indigo-dark: #221e5c;
+  --edu-amber: #f2a33c;
+  --edu-amber-dark: #c97a14;
+  --edu-teal: #16a394;
+  --edu-coral: #e85d5d;
+
+  /* surfaces and text (these change in dark mode) */
+  --edu-bg: #f7f7fb;
+  --edu-surface: #ffffff;
+  --edu-surface-2: #efeefc;
+  --edu-text: #1b1c3a;
+  --edu-muted: #55566f;
+  --edu-border: #e2e2ef;
+  --edu-heading: #1b1c3a;
+  --edu-accent-text: #2f2a77;
+  --edu-shadow: 0 0.5rem 1.5rem rgba(27, 28, 58, 0.08);
+  --edu-shadow-hover: 0 1rem 2.2rem rgba(27, 28, 58, 0.16);
+  --edu-nav-bg: #2f2a77;
+
+  /* type */
+  --edu-font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --edu-font-heading: Georgia, "Times New Roman", serif;
+  --edu-radius: 1rem;
+
+  /* Bootstrap variables -> our palette */
+  --bs-primary: var(--edu-indigo);
+  --bs-primary-rgb: 47, 42, 119;
+  --bs-primary-bg-subtle: var(--edu-surface-2);
+  --bs-primary-border-subtle: #cfcdee;
+  --bs-primary-text-emphasis: var(--edu-indigo);
+  --bs-warning: var(--edu-amber);
+  --bs-warning-rgb: 242, 163, 60;
+  --bs-body-bg: var(--edu-bg);
+  --bs-body-color: var(--edu-text);
+  --bs-secondary-color: var(--edu-muted);
+  --bs-border-color: var(--edu-border);
+  --bs-tertiary-bg: var(--edu-surface-2);
+  --bs-link-color: #4b44b8;
+  --bs-link-color-rgb: 75, 68, 184;
+  --bs-link-hover-color: var(--edu-indigo);
+  --bs-link-hover-color-rgb: 47, 42, 119;
+  --bs-body-font-family: var(--edu-font-body);
+  --bs-form-invalid-color: #c8333d;
+  --bs-form-invalid-border-color: #c8333d;
+  --bs-form-valid-color: #1b8a55;
+  --bs-form-valid-border-color: #1b8a55;
+}
+
+
+/* ==========================================================================
+   02. DARK MODE
+   script.js puts data-bs-theme="dark" on <html>. Bootstrap switches its own
+   components; here we switch our tokens. Every pair was checked for at
+   least 4.5 : 1 contrast (WCAG AA).
+   ========================================================================== */
+html[data-bs-theme="dark"] {
+  --edu-bg: #12112a;
+  --edu-surface: #1c1b3d;
+  --edu-surface-2: #24224d;
+  --edu-text: #e6e5f7;
+  --edu-muted: #b0afd0;
+  --edu-border: #353362;
+  --edu-heading: #f3f2ff;
+  --edu-accent-text: #c9c6ff;
+  --edu-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.35);
+  --edu-shadow-hover: 0 1rem 2.2rem rgba(0, 0, 0, 0.5);
+  --edu-nav-bg: #1a1748;
+
+  --bs-primary-rgb: 170, 164, 255;
+  --bs-primary-bg-subtle: var(--edu-surface-2);
+  --bs-primary-border-subtle: #3a377a;
+  --bs-primary-text-emphasis: #c9c6ff;
+  --bs-body-bg: var(--edu-bg);
+  --bs-body-color: var(--edu-text);
+  --bs-secondary-color: var(--edu-muted);
+  --bs-border-color: var(--edu-border);
+  --bs-tertiary-bg: var(--edu-surface-2);
+  --bs-link-color: #b4afff;
+  --bs-link-color-rgb: 180, 175, 255;
+  --bs-link-hover-color: #d6d3ff;
+  --bs-link-hover-color-rgb: 214, 211, 255;
+  --bs-form-invalid-color: #ff8f96;
+  --bs-form-invalid-border-color: #ff8f96;
+  --bs-form-valid-color: #5fd69a;
+  --bs-form-valid-border-color: #5fd69a;
+}
+
+html[data-bs-theme="dark"] .card,
+html[data-bs-theme="dark"] .list-group,
+html[data-bs-theme="dark"] .accordion,
+html[data-bs-theme="dark"] .modal-content {
+  --bs-card-bg: var(--edu-surface);
+  --bs-list-group-bg: var(--edu-surface);
+  --bs-accordion-bg: var(--edu-surface);
+  --bs-modal-bg: var(--edu-surface);
+}
+
+html[data-bs-theme="dark"] .table {
+  --bs-table-bg: var(--edu-surface);
+}
+
+html[data-bs-theme="dark"] .btn-outline-primary {
+  --bs-btn-color: #c9c6ff;
+  --bs-btn-border-color: #8f88f2;
+  --bs-btn-hover-color: #12112a;
+  --bs-btn-hover-bg: #c9c6ff;
+  --bs-btn-hover-border-color: #c9c6ff;
+  --bs-btn-active-color: #12112a;
+  --bs-btn-active-bg: #c9c6ff;
+  --bs-btn-active-border-color: #c9c6ff;
+  --bs-btn-disabled-color: #c9c6ff;
+  --bs-btn-disabled-border-color: #8f88f2;
+}
+
+html[data-bs-theme="dark"] .btn-primary {
+  --bs-btn-bg: #5b54c9;
+  --bs-btn-border-color: #5b54c9;
+  --bs-btn-hover-bg: #6e67dc;
+  --bs-btn-hover-border-color: #6e67dc;
+  --bs-btn-disabled-bg: #5b54c9;
+  --bs-btn-disabled-border-color: #5b54c9;
+}
+
+html[data-bs-theme="dark"] .text-bg-primary {
+  background-color: var(--edu-indigo-light) !important;
+}
+
+html[data-bs-theme="dark"] mark {
+  background-color: #5a4a1c;
+  color: #fff3d6;
+}
+
+/* the colour change is animated only after a click on the switch
+   (script.js adds .theme-animated), so pages never flash while loading */
+.theme-animated body,
+.theme-animated .surface,
+.theme-animated .card,
+.theme-animated .navbar,
+.theme-animated .site-footer {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
+
+/* ==========================================================================
+   03. BASE
+   ========================================================================== */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--edu-bg);
+  color: var(--edu-text);
+  font-family: var(--edu-font-body);
+  line-height: 1.6;
+}
+
+main {
+  flex: 1 0 auto;   /* the footer stays at the bottom on short pages */
+}
+
+h1, h2, h3, h4,
+.font-serif {
+  font-family: var(--edu-font-heading);
+  color: var(--edu-heading);
+}
+
+h1, .display-5 {
+  letter-spacing: -0.01em;
+}
+
+.text-secondary {
+  color: var(--edu-muted) !important;
+}
+
+.text-accent {
+  color: var(--edu-accent-text) !important;
+}
+
+.lead {
+  font-size: 1.15rem;
+}
+
+.text-measure {
+  max-width: 42rem;
+}
+
+/* a reusable white (or dark) panel */
+.surface {
+  background-color: var(--edu-surface);
+  border: 1px solid var(--edu-border);
+  border-radius: var(--edu-radius);
+  box-shadow: var(--edu-shadow);
+}
+
+.bg-tint {
+  background-color: var(--edu-surface-2);
+}
+
+mark {
+  padding: 0 0.2em;
+  border-radius: 0.25em;
+  background-color: #ffe7b8;
+}
+
+/* keyboard users always see where they are */
+:focus-visible {
+  outline: 3px solid var(--edu-amber);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  z-index: 3000;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--edu-amber);
+  color: #1b1c3a;
+  font-weight: 700;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* the hidden attribute must win over Bootstrap classes such as .d-flex */
+[hidden] {
+  display: none !important;
+}
+
+
+/* ==========================================================================
+   04. BUTTONS AND HOVER EFFECTS
+   Bootstrap builds each .btn-* from --bs-btn-* variables, so we recolour
+   the buttons by changing those variables.
+   ========================================================================== */
+.btn {
+  --bs-btn-font-weight: 600;
+  border-radius: 0.65rem;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease,
+              box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* hover: the button lifts a little and gets a soft shadow */
+.btn:not(:disabled):not(.btn-link):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(47, 42, 119, 0.22);
+}
+
+.btn:not(:disabled):not(.btn-link):active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--edu-indigo);
+  --bs-btn-border-color: var(--edu-indigo);
+  --bs-btn-hover-bg: var(--edu-indigo-light);
+  --bs-btn-hover-border-color: var(--edu-indigo-light);
+  --bs-btn-active-bg: var(--edu-indigo-dark);
+  --bs-btn-active-border-color: var(--edu-indigo-dark);
+  --bs-btn-disabled-bg: var(--edu-indigo);
+  --bs-btn-disabled-border-color: var(--edu-indigo);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--edu-indigo);
+  --bs-btn-border-color: var(--edu-indigo);
+  --bs-btn-hover-bg: var(--edu-indigo);
+  --bs-btn-hover-border-color: var(--edu-indigo);
+  --bs-btn-active-bg: var(--edu-indigo);
+  --bs-btn-active-border-color: var(--edu-indigo);
+  --bs-btn-disabled-color: var(--edu-indigo);
+  --bs-btn-disabled-border-color: var(--edu-indigo);
+}
+
+/* amber buttons keep DARK text: white text on amber fails contrast */
+.btn-warning {
+  --bs-btn-color: #1b1c3a;
+  --bs-btn-bg: var(--edu-amber);
+  --bs-btn-border-color: var(--edu-amber);
+  --bs-btn-hover-color: #1b1c3a;
+  --bs-btn-hover-bg: #f5b459;
+  --bs-btn-hover-border-color: #f5b459;
+  --bs-btn-active-color: #1b1c3a;
+  --bs-btn-active-bg: var(--edu-amber-dark);
+  --bs-btn-active-border-color: var(--edu-amber-dark);
+  --bs-btn-disabled-color: #1b1c3a;
+  --bs-btn-disabled-bg: var(--edu-amber);
+  --bs-btn-disabled-border-color: var(--edu-amber);
+}
+
+.btn[aria-busy="true"] {
+  opacity: 0.9;
+  cursor: progress;
+}
+
+/* an icon inside a button turns once when the button is hovered */
+.btn-icon-spin .bi {
+  display: inline-block;
+  transition: transform 0.45s ease;
+}
+
+.btn-icon-spin:hover .bi {
+  transform: rotate(360deg);
+}
+
+/* an arrow that slides to the right on hover */
+.btn-arrow .bi-arrow-right {
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+
+.btn-arrow:hover .bi-arrow-right {
+  transform: translateX(4px);
+}
+
+.form-check-input:checked {
+  background-color: var(--edu-indigo-light);
+  border-color: var(--edu-indigo-light);
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: var(--edu-indigo-light);
+  box-shadow: 0 0 0 0.25rem rgba(91, 84, 201, 0.25);
+}
+
+.form-control,
+.form-select {
+  border-radius: 0.65rem;
+}
+
+
+/* ==========================================================================
+   05. NAVBAR, THEME SWITCH, USER MENU
+   ========================================================================== */
+.site-nav {
+  background-color: var(--edu-nav-bg);
+  border-bottom: 3px solid var(--edu-amber);
+  --bs-navbar-color: rgba(255, 255, 255, 0.88);
+  --bs-navbar-hover-color: #ffffff;
+  --bs-navbar-active-color: var(--edu-amber);
+}
+
+.brand-name {
+  font-family: var(--edu-font-heading);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.brand-tagline {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+}
+
+.navbar-brand img {
+  transition: transform 0.5s ease;
+}
+
+.navbar-brand:hover img {
+  transform: rotate(-12deg) scale(1.06);
+}
+
+/* a line grows under the link on hover; the current page keeps it */
+.site-nav .nav-link {
+  position: relative;
+  font-weight: 600;
+}
+
+.site-nav .nav-link::after {
+  content: "";
+  position: absolute;
+  left: var(--bs-navbar-nav-link-padding-x, 0.5rem);
+  right: var(--bs-navbar-nav-link-padding-x, 0.5rem);
+  bottom: 0.15rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--edu-amber);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.site-nav .nav-link:hover::after,
+.site-nav .nav-link.active::after {
+  transform: scaleX(1);
+}
+
+/* Light / dark switch: a pill with a knob that slides and turns */
+.theme-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 3.6rem;
+  height: 1.9rem;
+  padding: 0 0.45rem;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.theme-switch:hover {
+  border-color: var(--edu-amber);
+}
+
+.theme-switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--edu-amber);
+  color: #1b1c3a;
+  font-size: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.35s cubic-bezier(0.4, 1.4, 0.6, 1), background-color 0.3s ease;
+}
+
+.theme-switch[aria-checked="true"] .theme-switch-knob {
+  transform: translateX(1.7rem) rotate(360deg);
+  background: #c9c6ff;
+}
+
+/* the knob shows the sun in light mode and the moon in dark mode */
+.theme-switch .icon-moon,
+.theme-switch[aria-checked="true"] .icon-sun {
+  display: none;
+}
+
+.theme-switch[aria-checked="true"] .icon-moon {
+  display: inline;
+}
+
+/* round avatar with the user's initials (navbar + profile) */
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--avatar-colour, var(--edu-teal));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+.avatar-lg {
+  width: 6rem;
+  height: 6rem;
+  font-size: 2.2rem;
+  border: 4px solid var(--edu-surface);
+  box-shadow: var(--edu-shadow);
+}
+
+.user-menu .dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fff;
+  text-decoration: none;
+}
+
+.user-menu .dropdown-menu {
+  --bs-dropdown-link-active-bg: var(--edu-indigo-light);
+  border-radius: 0.8rem;
+  box-shadow: var(--edu-shadow-hover);
+}
+
+/* the auth area is filled by script.js; before that it keeps its height */
+.nav-auth {
+  min-height: 2.4rem;
+}
+
+
+/* ==========================================================================
+   06. PAGE HEADER AND SECTION TITLES
+   ========================================================================== */
+.page-header {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(242, 163, 60, 0.18), transparent 40%),
+    linear-gradient(135deg, var(--edu-surface-2), var(--edu-bg));
+  border-bottom: 1px solid var(--edu-border);
+}
+
+.page-header .breadcrumb {
+  --bs-breadcrumb-divider-color: var(--edu-muted);
+  --bs-breadcrumb-item-active-color: var(--edu-muted);
+  font-size: 0.9rem;
+}
+
+.page-header-image {
+  border-radius: var(--edu-radius);
+  box-shadow: var(--edu-shadow);
+}
+
+.hero {
+  background:
+    radial-gradient(circle at 10% 10%, rgba(91, 84, 201, 0.14), transparent 35%),
+    radial-gradient(circle at 90% 80%, rgba(22, 163, 148, 0.12), transparent 35%),
+    var(--edu-bg);
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  color: var(--edu-amber-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+html[data-bs-theme="dark"] .eyebrow {
+  color: var(--edu-amber);
+}
+
+.section {
+  padding-block: 4rem;
+}
+
+.section-tight {
+  padding-block: 2.5rem;
+}
+
+.section-title {
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+
+/* ==========================================================================
+   07. CARDS
+   ========================================================================== */
+.card {
+  --bs-card-bg: var(--edu-surface);
+  --bs-card-border-color: var(--edu-border);
+  --bs-card-border-radius: var(--edu-radius);
+  --bs-card-inner-border-radius: calc(var(--edu-radius) - 1px);
+  box-shadow: var(--edu-shadow);
+}
+
+/* lifts on hover — used on every clickable card */
+.card-hover {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--edu-shadow-hover);
+}
+
+.card-img-top {
+  aspect-ratio: 5 / 3;
+  object-fit: cover;
+}
+
+/* the image zooms slowly inside its frame */
+.img-zoom {
+  overflow: hidden;
+  border-top-left-radius: var(--bs-card-inner-border-radius);
+  border-top-right-radius: var(--bs-card-inner-border-radius);
+}
+
+.img-zoom img {
+  transition: transform 0.5s ease;
+}
+
+.card-hover:hover .img-zoom img {
+  transform: scale(1.06);
+}
+
+.feature-icon {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-inline: auto;
+  border-radius: 50%;
+  background: var(--edu-surface-2);
+  transition: transform 0.5s ease;
+}
+
+.card-hover:hover .feature-icon {
+  transform: rotate(-10deg) scale(1.08);
+}
+
+.icon-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.8rem;
+  background: var(--edu-surface-2);
+  color: var(--edu-accent-text);
+  font-size: 1.25rem;
+}
+
+.stat-card {
+  border-top: 4px solid var(--edu-amber);
+  text-align: center;
+}
+
+.counter {
+  font-variant-numeric: tabular-nums;   /* digits keep their width while counting */
+}
+
+.quote-card {
+  border-left: 4px solid var(--edu-amber);
+}
+
+/* portraits are square SVGs; a 4:3 crop keeps the head and shoulders */
+.person-photo {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.cta-band {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(242, 163, 60, 0.35), transparent 35%),
+    linear-gradient(135deg, var(--edu-indigo), var(--edu-indigo-light));
+  color: #fff;
+  border-radius: 1.5rem;
+}
+
+.cta-band h2 {
+  color: #fff;
+}
+
+
+/* ==========================================================================
+   08. COURSE CATALOGUE
+   ========================================================================== */
+.search-box {
+  position: relative;
+}
+
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 1050;
+  max-height: 20rem;
+  overflow-y: auto;
+  border-radius: 0.8rem;
+  box-shadow: var(--edu-shadow-hover);
+}
+
+.search-suggestions .list-group-item {
+  cursor: pointer;
+}
+
+.search-suggestions .suggestion-type {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--edu-muted);
+}
+
+.search-suggestions .list-group-item.active {
+  background-color: var(--edu-indigo-light);
+  border-color: var(--edu-indigo-light);
+}
+
+.search-suggestions .list-group-item.active .suggestion-type {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.search-suggestions strong {
+  color: var(--edu-amber-dark);
+}
+
+.search-suggestions .active strong {
+  color: #ffe0a8;
+}
+
+mark.search-hit {
+  padding: 0 0.1em;
+  background: linear-gradient(120deg, #ffe08a, #ffc46b);
+  color: #1b1c3a;
+}
+
+.filter-panel {
+  position: sticky;
+  top: 1rem;
+}
+
+/* small round "chips" for recent searches and topics */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--edu-border);
+  border-radius: 2rem;
+  background: var(--edu-surface);
+  color: var(--edu-text);
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.chip:hover {
+  border-color: var(--edu-indigo-light);
+  background: var(--edu-surface-2);
+  transform: translateY(-1px);
+}
+
+.chip.active {
+  border-color: var(--edu-indigo-light);
+  background: var(--edu-indigo-light);
+  color: #fff;
+}
+
+/* rating stars */
+.star {
+  padding: 0 0.08rem;
+  border: 0;
+  background: none;
+  color: #c9c8dc;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.18s ease;
+}
+
+.star.active,
+.rating:hover .star {
+  color: var(--edu-amber);
+}
+
+.rating .star:hover ~ .star {
+  color: #c9c8dc;
+}
+
+html[data-bs-theme="dark"] .star {
+  color: #5a5884;
+}
+
+html[data-bs-theme="dark"] .star.active,
+html[data-bs-theme="dark"] .rating:hover .star {
+  color: var(--edu-amber);
+}
+
+html[data-bs-theme="dark"] .rating .star:hover ~ .star {
+  color: #5a5884;
+}
+
+/* heart button that saves a course */
+.save-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--edu-coral);
+  font-size: 1.15rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(27, 28, 58, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.save-btn:hover {
+  transform: scale(1.12);
+}
+
+.save-btn.saved .bi-heart::before {
+  content: "\f415";   /* bi-heart-fill */
+}
+
+.syllabus {
+  display: none;
+}
+
+.syllabus.open {
+  display: block;
+}
+
+.wizard-step {
+  min-height: 9rem;
+}
+
+#confirm-btn {
+  display: none;   /* shown by courses.js on the last step */
+}
+
+.promo-code {
+  padding: 0.2rem 0.5rem;
+  border: 2px dashed var(--edu-amber);
+  border-radius: 0.4rem;
+  font: 700 1rem/1.4 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  letter-spacing: 0.08em;
+}
+
+
+/* ==========================================================================
+   09. FORMS — VALIDATION, PASSWORD METER, AUTH PAGES
+   validation.js adds .is-invalid / .is-valid and writes the message into
+   the .invalid-feedback element under the field.
+   ========================================================================== */
+.form-label {
+  font-weight: 600;
+}
+
+.required-mark {
+  color: var(--bs-form-invalid-color);
+}
+
+.invalid-feedback {
+  font-weight: 500;
+}
+
+.invalid-feedback::before {
+  content: "\26A0\FE0E  ";   /* warning sign, text style */
+}
+
+/* summary box at the top of a form after a failed submit */
+.form-alert {
+  border-left: 4px solid var(--bs-form-invalid-color);
+}
+
+.input-group .btn-toggle-password {
+  border-color: var(--bs-border-color);
+}
+
+.password-meter {
+  height: 0.45rem;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: var(--edu-border);
+}
+
+.password-meter-bar {
+  width: 0;
+  height: 100%;
+  border-radius: 1rem;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.password-rules li {
+  color: var(--edu-muted);
+  transition: color 0.2s ease;
+}
+
+.password-rules li::before {
+  content: "\25CB";   /* empty circle */
+  display: inline-block;
+  width: 1.25rem;
+}
+
+.password-rules li.ok {
+  color: var(--bs-form-valid-color);
+}
+
+.password-rules li.ok::before {
+  content: "\2713";   /* check mark */
+  font-weight: 700;
+}
+
+.auth-wrap {
+  max-width: 64rem;
+}
+
+.auth-card {
+  overflow: hidden;
+  border-radius: 1.5rem;
+}
+
+.auth-side {
+  background:
+    radial-gradient(circle at 20% 15%, rgba(242, 163, 60, 0.35), transparent 40%),
+    linear-gradient(160deg, var(--edu-indigo), var(--edu-indigo-light));
+  color: #fff;
+}
+
+.auth-side h2,
+.auth-side h1 {
+  color: #fff;
+}
+
+.auth-side .bi {
+  color: var(--edu-amber);
+}
+
+
+/* ==========================================================================
+   10. PROFILE PAGE
+   ========================================================================== */
+.profile-cover {
+  height: 9rem;
+  background:
+    radial-gradient(circle at 80% 30%, rgba(242, 163, 60, 0.45), transparent 40%),
+    linear-gradient(135deg, var(--edu-indigo), var(--avatar-colour, var(--edu-indigo-light)));
+  border-radius: var(--edu-radius) var(--edu-radius) 0 0;
+}
+
+/* only the avatar overlaps the cover; the name stays below it */
+.profile-head .avatar-lg {
+  margin-top: -3rem;
+}
+
+.profile-list .list-group-item {
+  display: flex;
+  flex-wrap: wrap;   /* on very narrow phones the buttons move to a new line */
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.profile-list .list-group-item > div {
+  flex: 1 1 9rem;
+  min-width: 0;
+}
+
+.empty-state {
+  padding: 1.5rem;
+  border: 2px dashed var(--edu-border);
+  border-radius: var(--edu-radius);
+  color: var(--edu-muted);
+  text-align: center;
+}
+
+
+/* ==========================================================================
+   11. LIBRARY PAGE (WIKIPEDIA API)
+   ========================================================================== */
+.result-card {
+  cursor: pointer;
+}
+
+.result-card.selected {
+  border-color: var(--edu-indigo-light);
+  box-shadow: 0 0 0 3px rgba(91, 84, 201, 0.35);
+}
+
+.result-snippet .searchmatch {
+  padding: 0 0.15em;
+  border-radius: 0.2em;
+  background: #ffe7b8;
+  color: #1b1c3a;
+  font-weight: 600;
+}
+
+.article-thumb {
+  width: 100%;
+  max-height: 16rem;
+  object-fit: contain;
+  border-radius: 0.8rem;
+  background: #fff;
+}
+
+/* grey blocks with a moving shine while the API is loading */
+.skeleton {
+  display: block;
+  border-radius: 0.5rem;
+  background: linear-gradient(100deg, var(--edu-border) 30%, var(--edu-surface-2) 50%, var(--edu-border) 70%);
+  background-size: 300% 100%;
+  animation: shimmer 1.3s linear infinite;
+}
+
+.skeleton-line {
+  height: 0.9rem;
+  margin-bottom: 0.6rem;
+}
+
+.skeleton-title {
+  width: 60%;
+  height: 1.3rem;
+  margin-bottom: 0.9rem;
+}
+
+
+/* ==========================================================================
+   12. SCHEDULE, GALLERY AND FAQ
+   ========================================================================== */
+.timetable td,
+.timetable th {
+  min-width: 8.5rem;
+  transition: opacity 0.25s ease, background-color 0.25s ease;
+}
+
+.timetable .is-today {
+  background-color: rgba(242, 163, 60, 0.16) !important;
+}
+
+.timetable td.dimmed {
+  opacity: 0.25;
+}
+
+.timetable td.match {
+  box-shadow: inset 4px 0 0 var(--edu-amber);
+}
+
+.gallery-item {
+  cursor: zoom-in;
+}
+
+.lazy-frame {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--edu-radius);
+  background: linear-gradient(100deg, var(--edu-border) 30%, var(--edu-surface-2) 50%, var(--edu-border) 70%);
+  background-size: 300% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+.lazy-frame.is-loaded {
+  animation: none;
+}
+
+.lazy-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.lazy-frame.is-loaded img {
+  opacity: 1;
+  transform: none;
+}
+
+.gallery-item:hover .lazy-frame.is-loaded img {
+  transform: scale(1.05);
+}
+
+.gallery-item .zoom-hint {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 50%;
+  background: rgba(27, 28, 58, 0.75);
+  color: #fff;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.gallery-item:hover .zoom-hint,
+.gallery-item:focus-visible .zoom-hint {
+  opacity: 1;
+  transform: none;
+}
+
+.carousel-item img {
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+  border-radius: var(--edu-radius);
+}
+
+.carousel-caption {
+  right: 10%;
+  bottom: 2.5rem;
+  left: 10%;
+  background: rgba(27, 28, 58, 0.78);
+}
+
+.faq-item {
+  transition: opacity 0.25s ease;
+}
+
+.faq-item.faq-dim {
+  opacity: 0.45;
+}
+
+.accordion {
+  --bs-accordion-active-bg: var(--edu-surface-2);
+  --bs-accordion-active-color: var(--edu-accent-text);
+  --bs-accordion-btn-focus-box-shadow: 0 0 0 0.25rem rgba(91, 84, 201, 0.25);
+}
+
+
+/* ==========================================================================
+   13. FOOTER AND NEWSLETTER
+   ========================================================================== */
+.site-footer {
+  background-color: var(--edu-nav-bg);
+  border-top: 3px solid var(--edu-amber);
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.site-footer h2 {
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.site-footer a {
+  color: rgba(255, 255, 255, 0.88);
+  text-decoration: none;
+  transition: color 0.2s ease, padding-left 0.2s ease;
+}
+
+.site-footer a:hover {
+  color: var(--edu-amber);
+  padding-left: 0.2rem;
+}
+
+.site-footer .form-control {
+  border-color: transparent;
+}
+
+/* error text under the footer field must stay readable on indigo */
+.site-footer .invalid-feedback {
+  color: #ffc2c6;
+}
+
+.site-footer .form-control.is-invalid {
+  border-color: #ff8f96;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+
+/* ==========================================================================
+   14. SCROLL PROGRESS, BACK TO TOP, TOASTS, COPY BUTTONS
+   ========================================================================== */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2000;
+  width: 100%;
+  height: 4px;
+  pointer-events: none;
+}
+
+.scroll-progress-bar {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--edu-amber), #ff5f8f 40%, #8f5cff 70%, #2fd4ff);
+  background-size: 100vw 100%;
+}
+
+.back-to-top {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 1040;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 0;
+  border-radius: 50%;
+  background: var(--edu-indigo-light);
+  color: #fff;
+  font-size: 1.2rem;
+  box-shadow: var(--edu-shadow-hover);
+  opacity: 0;
+  transform: translateY(1rem);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.2s ease;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.back-to-top:hover {
+  background: var(--edu-indigo);
+}
+
+.toast-stack {
+  position: fixed;
+  right: 1rem;
+  bottom: 5rem;
+  z-index: 2100;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: min(22rem, calc(100vw - 2rem));
+}
+
+.edu-toast {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.8rem 2.4rem 0.9rem 0.9rem;
+  overflow: hidden;
+  border-left: 5px solid var(--toast-colour);
+  border-radius: 0.7rem;
+  background: var(--edu-surface);
+  color: var(--edu-text);
+  box-shadow: var(--edu-shadow-hover);
+}
+
+.edu-toast > .bi {
+  color: var(--toast-colour);
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+.edu-toast-success { --toast-colour: #1f9d61; }
+.edu-toast-info    { --toast-colour: var(--edu-indigo-light); }
+.edu-toast-warning { --toast-colour: var(--edu-amber-dark); }
+.edu-toast-error   { --toast-colour: #c8333d; }
+
+.edu-toast-close {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.5rem;
+  border: 0;
+  background: none;
+  color: var(--edu-muted);
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.edu-toast-timer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--toast-colour);
+}
+
+.copy-btn {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.copy-btn.copied {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #1f9d61;
+  --bs-btn-border-color: #1f9d61;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #1f9d61;
+  --bs-btn-hover-border-color: #1f9d61;
+}
+
+.copy-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.4rem;
+  background: #1b1c3a;
+  color: #fff;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+
+/* ==========================================================================
+   15. ANIMATIONS
+   ========================================================================== */
+
+/* Reveal on scroll: script.js adds .is-visible when the block enters the
+   screen. The hiding only happens when JavaScript runs (html.js), so the
+   content is never lost without JavaScript. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.fade-in {
+  animation: fade-in-up 0.45s ease both;
+}
+
+.pop {
+  animation: pop 0.4s ease;
+}
+
+.shake {
+  animation: shake 0.35s ease;
+}
+
+.highlight {
+  animation: highlight 1.2s ease;
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes pop {
+  50% { transform: scale(1.18); }
+}
+
+@keyframes shake {
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+@keyframes highlight {
+  from { box-shadow: 0 0 0 0 rgba(242, 163, 60, 0.9); }
+  to   { box-shadow: 0 0 0 18px rgba(242, 163, 60, 0); }
+}
+
+@keyframes float {
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  from { background-position: 100% 0; }
+  to   { background-position: -100% 0; }
+}
+
+
+/* ==========================================================================
+   16. RESPONSIVE FINE-TUNING
+   Bootstrap's grid does most of the work; these rules fix the details.
+   ========================================================================== */
+
+/* small phones: the logo, the switch and the menu button fit in one row */
+@media (max-width: 419.98px) {
+  .brand-name {
+    font-size: 1.2rem;
+  }
+
+  .brand-tagline {
+    display: none;
+  }
+
+  .navbar-brand img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .site-nav .navbar-toggler {
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* phones */
+@media (max-width: 575.98px) {
+  .section {
+    padding-block: 2.75rem;
+  }
+
+  .display-5 {
+    font-size: 2.1rem;
+  }
+
+  .cta-band {
+    border-radius: 1rem;
+  }
+
+  .toast-stack {
+    right: 0.5rem;
+    width: calc(100vw - 1rem);
+  }
+}
+
+/* phones and tablets: the menu is collapsed under the hamburger */
+@media (max-width: 1199.98px) {
+  .site-nav .navbar-collapse {
+    padding-block: 0.75rem;
+  }
+
+  .site-nav .nav-link::after {
+    left: 0;
+    right: auto;
+    width: 2.5rem;
+  }
+
+  .filter-panel {
+    position: static;
+  }
+}
+
+/* large screens: links sit in one row */
+@media (min-width: 1200px) {
+  .site-nav .nav-link {
+    padding-inline: 0.6rem;
+  }
+}
+
+
+/* ==========================================================================
+   17. REDUCED MOTION — people who switch motion off in their system
+   settings get the same site without movement
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

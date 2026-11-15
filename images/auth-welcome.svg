@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" width="480" height="300" role="img">
+  <title>Student waving from a laptop screen next to a graduation cap</title>
+  <rect width="480" height="300" rx="20" fill="#efeefc"/>
+  <circle cx="70" cy="60" r="44" fill="#5b54c9" opacity="0.18"/>
+  <circle cx="420" cy="250" r="56" fill="#16a394" opacity="0.18"/>
+
+  <!-- laptop -->
+  <rect x="120" y="70" width="220" height="140" rx="12" fill="#2f2a77"/>
+  <rect x="132" y="82" width="196" height="116" rx="7" fill="#ffffff"/>
+  <rect x="96" y="210" width="268" height="14" rx="7" fill="#413c9e"/>
+
+  <!-- student on the screen -->
+  <circle cx="230" cy="126" r="24" fill="#ffe0b8"/>
+  <path d="M206 120 a24 24 0 0 1 48 0 c0 -18 -10 -28 -24 -28 s-24 10 -24 28 z" fill="#3a2e1f"/>
+  <path d="M190 198 c0 -26 18 -42 40 -42 s40 16 40 42 z" fill="#16a394"/>
+  <!-- waving hand -->
+  <path d="M276 160 l20 -34" stroke="#ffe0b8" stroke-width="12" stroke-linecap="round"/>
+  <path d="M302 116 q8 -6 12 2 M306 128 q10 -2 10 8" stroke="#f2a33c" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+  <!-- graduation cap -->
+  <path d="M362 92 L410 74 L458 92 L410 110 Z" fill="#f2a33c"/>
+  <path d="M384 102 v18 c0 8 12 13 26 13 s26 -5 26 -13 v-18 l-26 10 z" fill="#2f2a77"/>
+  <line x1="458" y1="92" x2="458" y2="120" stroke="#2f2a77" stroke-width="3"/>
+  <circle cx="458" cy="124" r="5" fill="#16a394"/>
+
+  <!-- sparkles -->
+  <path d="M70 160 l6 14 l14 6 l-14 6 l-6 14 l-6 -14 l-14 -6 l14 -6 z" fill="#f2a33c"/>
+  <circle cx="380" cy="190" r="6" fill="#5b54c9"/>
+</svg>

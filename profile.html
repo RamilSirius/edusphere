@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <!-- =====================================================================
+       EduSphere — online learning platform (Front-End final project)
+       Team    : The Ethernet, group SE-2510
+       Members : Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+       Page    : profile.html — Profile
+       Author  : Ramil Zhunussov
+       On this page:
+         - Shows the stored user details (profile.js)
+         - Edit profile and change password forms with validation
+         - Enrolments, saved courses, reading list, log out, delete account
+       ===================================================================== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Your EduSphere profile: personal details, enrolments, saved courses and reading list.">
+  <meta name="author" content="The Ethernet: Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin">
+  <meta name="theme-color" content="#2f2a77">
+  <title>My Profile — EduSphere</title>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+  <script>
+    // Applies the saved light / dark mode BEFORE the page is drawn, so it never flashes.
+    // The "js" class tells the CSS that JavaScript works (used by the reveal animations).
+    (function () {
+      var theme = 'light';
+      try {
+        theme = localStorage.getItem('edusphere-theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (error) { /* storage blocked: light mode */ }
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+  <!-- Bootstrap and Bootstrap Icons from a CDN, then our own styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============================ NAVBAR ================================
+       navbar-expand-xl: links in one row from 1200px, a hamburger below.
+       The light / dark switch stays visible on every screen size.
+       #nav-auth shows "Log in / Sign up"; script.js replaces it with the
+       user's menu when somebody is logged in.
+       ===================================================================== -->
+  <header>
+    <nav class="navbar navbar-expand-xl site-nav py-2" data-bs-theme="dark" aria-label="Main navigation">
+      <div class="container-xxl px-3 px-lg-4">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+          <img src="images/logo.svg" alt="" width="42" height="42">
+          <span class="d-flex flex-column lh-1">
+            <span class="brand-name">EduSphere</span>
+            <small class="text-warning text-uppercase brand-tagline mt-1">Learn · Practise · Grow</small>
+          </span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2 gap-sm-3 ms-auto ms-xl-3 order-xl-last">
+          <!-- light / dark mode switch (script.js) -->
+          <button class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Dark mode">
+            <i class="bi bi-sun" aria-hidden="true"></i>
+            <i class="bi bi-moon-stars" aria-hidden="true"></i>
+            <span class="theme-switch-knob" aria-hidden="true">
+              <i class="bi bi-sun-fill icon-sun"></i><i class="bi bi-moon-stars-fill icon-moon"></i>
+            </span>
+          </button>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                  aria-controls="mainNav" aria-expanded="false" aria-label="Open the menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="courses.html">Courses</a></li>
+            <li class="nav-item"><a class="nav-link" href="instructors.html">Instructors</a></li>
+            <li class="nav-item"><a class="nav-link" href="schedule.html">Schedule</a></li>
+            <li class="nav-item"><a class="nav-link" href="library.html">Library</a></li>
+            <li class="nav-item"><a class="nav-link" href="gallery.html">Gallery</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          </ul>
+          <div id="nav-auth" class="nav-auth d-flex align-items-center gap-2 mt-2 mt-xl-0">
+            <a class="btn btn-outline-light btn-sm px-3" href="login.html">Log in</a>
+            <a class="btn btn-warning btn-sm px-3" href="signup.html">Sign up</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="section-tight">
+      <div class="container-xxl px-3 px-lg-4">
+        <noscript><p class="alert alert-warning">The profile needs JavaScript: turn it on and reload the page.</p></noscript>
+
+        <!-- profile.js shows this block only for a logged-in user;
+             guests are sent to the log-in page -->
+        <div id="profile-root" hidden>
+
+          <!-- ======================= PROFILE CARD ======================= -->
+          <div class="card mb-4">
+            <div id="profile-cover" class="profile-cover"></div>
+            <div class="card-body px-3 px-sm-4 pb-4 pt-0">
+              <div class="d-flex flex-column flex-md-row align-items-md-end gap-3 profile-head">
+                <span id="profile-avatar" class="avatar avatar-lg" aria-hidden="true"></span>
+                <div class="flex-grow-1">
+                  <h1 id="profile-name" class="h2 fw-bold mb-0">Student</h1>
+                  <p class="text-secondary mb-0"><span id="profile-email-line"></span> · member since <span id="profile-joined"></span></p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <a class="btn btn-outline-primary btn-icon-spin" href="#edit-profile"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Edit profile</a>
+                  <button class="btn btn-primary" type="button" data-action="logout"><i class="bi bi-box-arrow-right me-1" aria-hidden="true"></i>Log out</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================== STATS ========================== -->
+          <ul class="row row-cols-2 row-cols-md-4 g-3 list-unstyled mb-4" aria-label="Your activity">
+            <li class="col"><div class="surface stat-card p-3 h-100"><strong id="stat-saved" class="d-block fs-2 font-serif text-accent">0</strong><span class="small text-secondary">saved courses</span></div></li>
+            <li class="col"><div class="surface stat-card p-3 h-100"><strong id="stat-enrolments" class="d-block fs-2 font-serif text-accent">0</strong><span class="small text-secondary">enrolments</span></div></li>
+            <li class="col"><div class="surface stat-card p-3 h-100"><strong id="stat-reading" class="d-block fs-2 font-serif text-accent">0</strong><span class="small text-secondary">articles to read</span></div></li>
+            <li class="col"><div class="surface stat-card p-3 h-100"><strong id="stat-cohort" class="d-block fs-2 font-serif text-accent">—</strong><span class="small text-secondary">next cohort place</span></div></li>
+          </ul>
+
+          <div class="row g-4">
+            <!-- ===================== LEFT: details ===================== -->
+            <div class="col-12 col-lg-5">
+              <div class="surface p-4 mb-4">
+                <h2 class="h5 fw-bold mb-3"><i class="bi bi-person-vcard me-2 text-accent" aria-hidden="true"></i>My details</h2>
+                <dl class="row mb-0">
+                  <dt class="col-sm-4 text-secondary fw-semibold">Name</dt>
+                  <dd id="detail-name" class="col-sm-8"></dd>
+                  <dt class="col-sm-4 text-secondary fw-semibold">Email</dt>
+                  <dd id="detail-email" class="col-sm-8 text-break"></dd>
+                  <dt class="col-sm-4 text-secondary fw-semibold">Phone</dt>
+                  <dd id="detail-phone" class="col-sm-8"></dd>
+                  <dt class="col-sm-4 text-secondary fw-semibold">Password</dt>
+                  <dd class="col-sm-8">•••••••• <span class="small text-secondary">(stored as a hash)</span></dd>
+                  <dt class="col-sm-4 text-secondary fw-semibold">Joined</dt>
+                  <dd id="detail-joined" class="col-sm-8 mb-0"></dd>
+                </dl>
+              </div>
+
+              <!-- edit profile (validation.js + profile.js) -->
+              <div id="edit-profile" class="surface p-4 mb-4">
+                <h2 class="h5 fw-bold mb-3"><i class="bi bi-pencil-square me-2 text-accent" aria-hidden="true"></i>Edit profile</h2>
+                <form id="profile-form" novalidate>
+                  <div class="mb-3">
+                    <label for="profile-name-input" class="form-label">Full name <span class="required-mark">*</span></label>
+                    <input id="profile-name-input" class="form-control" type="text" autocomplete="name">
+                  </div>
+                  <div class="mb-3">
+                    <label for="profile-email-input" class="form-label">Email <span class="required-mark">*</span></label>
+                    <input id="profile-email-input" class="form-control" type="text" inputmode="email" autocomplete="email">
+                  </div>
+                  <div class="mb-3">
+                    <label for="profile-phone-input" class="form-label">Phone <span class="required-mark">*</span></label>
+                    <input id="profile-phone-input" class="form-control" type="tel" autocomplete="tel">
+                  </div>
+                  <button class="btn btn-primary" type="submit">Save changes</button>
+                </form>
+              </div>
+
+              <!-- change password -->
+              <div class="surface p-4 mb-4">
+                <h2 class="h5 fw-bold mb-3"><i class="bi bi-key me-2 text-accent" aria-hidden="true"></i>Change password</h2>
+                <form id="password-form" novalidate>
+                  <div class="mb-3">
+                    <label for="current-password" class="form-label">Current password <span class="required-mark">*</span></label>
+                    <input id="current-password" class="form-control" type="password" autocomplete="current-password">
+                  </div>
+                  <div class="mb-3">
+                    <label for="new-password" class="form-label">New password <span class="required-mark">*</span></label>
+                    <input id="new-password" class="form-control" type="password" autocomplete="new-password">
+                    <div class="form-text">8–64 characters with a capital letter, a small letter, a digit and a symbol.</div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="confirm-password" class="form-label">Repeat the new password <span class="required-mark">*</span></label>
+                    <input id="confirm-password" class="form-control" type="password" autocomplete="new-password">
+                  </div>
+                  <button class="btn btn-outline-primary" type="submit">Update password</button>
+                </form>
+              </div>
+
+              <div class="surface p-4 border-danger-subtle">
+                <h2 class="h5 fw-bold text-danger mb-2"><i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>Delete account</h2>
+                <p class="small text-secondary">Removes your account and everything saved in it from this browser.</p>
+                <button class="btn btn-outline-danger btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#delete-modal">Delete my account</button>
+              </div>
+            </div>
+
+            <!-- ===================== RIGHT: lists ===================== -->
+            <div class="col-12 col-lg-7">
+              <div class="surface p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h2 class="h5 fw-bold mb-0"><i class="bi bi-calendar-check me-2 text-accent" aria-hidden="true"></i>My enrolments</h2>
+                  <a class="btn btn-link btn-sm" href="courses.html#enrol">Enrol in a course</a>
+                </div>
+                <div id="enrolment-list"></div>
+              </div>
+
+              <div id="saved" class="surface p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h2 class="h5 fw-bold mb-0"><i class="bi bi-heart me-2 text-accent" aria-hidden="true"></i>Saved courses</h2>
+                  <a class="btn btn-link btn-sm" href="courses.html">Browse the catalogue</a>
+                </div>
+                <div id="saved-list"></div>
+              </div>
+
+              <div id="reading" class="surface p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h2 class="h5 fw-bold mb-0"><i class="bi bi-journal-bookmark me-2 text-accent" aria-hidden="true"></i>Reading list</h2>
+                  <a class="btn btn-link btn-sm" href="library.html">Open the library</a>
+                </div>
+                <div id="reading-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- confirmation window for deleting the account (Bootstrap modal, not confirm()) -->
+    <div class="modal fade" id="delete-modal" tabindex="-1" aria-labelledby="delete-title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 id="delete-title" class="modal-title h5">Delete your account?</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Your details, saved courses, enrolments and reading list will be removed from this browser.
+            This cannot be undone.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Keep my account</button>
+            <button id="confirm-delete" type="button" class="btn btn-danger">Yes, delete it</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============================ FOOTER ================================ -->
+  <footer class="site-footer">
+    <div class="container-xxl px-3 px-lg-4 pt-5 pb-3">
+      <div class="row g-4">
+        <div class="col-12 col-lg-4">
+          <a class="d-inline-flex align-items-center gap-2 mb-3" href="index.html">
+            <img src="images/logo.svg" alt="" width="36" height="36">
+            <span class="brand-name fs-5">EduSphere</span>
+          </a>
+          <p class="small mb-2">
+            Online courses with live classes, a personal mentor and a real project at
+            the end of every course. Made for students in Kazakhstan who want a portfolio,
+            not just watched videos.
+          </p>
+          <p class="small mb-0"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i>Mangilik El 55/11, Astana</p>
+        </div>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Explore EduSphere">
+          <h2 class="mb-3">Explore</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="instructors.html">Instructors</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="library.html">Learning library</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="about.html">About us</a></li>
+          </ul>
+        </nav>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Your account">
+          <h2 class="mb-3">Your account</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="signup.html">Sign up</a></li>
+            <li><a href="login.html">Log in</a></li>
+            <li><a href="profile.html">My profile</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+          </ul>
+        </nav>
+
+        <div class="col-12 col-md-4 col-lg-4">
+          <h2 class="mb-3">Open lectures</h2>
+          <!-- newsletter form: validated by script.js -->
+          <form id="newsletter-form" novalidate>
+            <label for="newsletter-email" class="small mb-2">A free guest lecture every Friday. Leave your email:</label>
+            <div class="input-group">
+              <input id="newsletter-email" class="form-control" type="text" inputmode="email" autocomplete="email" placeholder="name@example.com">
+              <button class="btn btn-warning" type="submit">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <p class="footer-bottom small text-center pt-3 mt-4 mb-0">
+        &copy; 2026 EduSphere · Front-End final project by <strong>The Ethernet</strong> (SE-2510):
+        Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+      </p>
+    </div>
+  </footer>
+
+  <!-- libraries, then the shared scripts, then the script of this page -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/4.0.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <!-- =====================================================================
+       EduSphere — online learning platform (Front-End final project)
+       Team    : The Ethernet, group SE-2510
+       Members : Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+       Page    : schedule.html — Schedule
+       Author  : Azamat Mustafin
+       On this page:
+         - Today's column is highlighted (schedule.js)
+         - Course filter that dims other classes, saved in localStorage
+       ===================================================================== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Weekly live class timetable of EduSphere. Highlight one course and see today's classes.">
+  <meta name="author" content="The Ethernet: Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin">
+  <meta name="theme-color" content="#2f2a77">
+  <title>Class Schedule — EduSphere</title>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+  <script>
+    // Applies the saved light / dark mode BEFORE the page is drawn, so it never flashes.
+    // The "js" class tells the CSS that JavaScript works (used by the reveal animations).
+    (function () {
+      var theme = 'light';
+      try {
+        theme = localStorage.getItem('edusphere-theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (error) { /* storage blocked: light mode */ }
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+  <!-- Bootstrap and Bootstrap Icons from a CDN, then our own styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============================ NAVBAR ================================
+       navbar-expand-xl: links in one row from 1200px, a hamburger below.
+       The light / dark switch stays visible on every screen size.
+       #nav-auth shows "Log in / Sign up"; script.js replaces it with the
+       user's menu when somebody is logged in.
+       ===================================================================== -->
+  <header>
+    <nav class="navbar navbar-expand-xl site-nav py-2" data-bs-theme="dark" aria-label="Main navigation">
+      <div class="container-xxl px-3 px-lg-4">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+          <img src="images/logo.svg" alt="" width="42" height="42">
+          <span class="d-flex flex-column lh-1">
+            <span class="brand-name">EduSphere</span>
+            <small class="text-warning text-uppercase brand-tagline mt-1">Learn · Practise · Grow</small>
+          </span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2 gap-sm-3 ms-auto ms-xl-3 order-xl-last">
+          <!-- light / dark mode switch (script.js) -->
+          <button class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Dark mode">
+            <i class="bi bi-sun" aria-hidden="true"></i>
+            <i class="bi bi-moon-stars" aria-hidden="true"></i>
+            <span class="theme-switch-knob" aria-hidden="true">
+              <i class="bi bi-sun-fill icon-sun"></i><i class="bi bi-moon-stars-fill icon-moon"></i>
+            </span>
+          </button>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                  aria-controls="mainNav" aria-expanded="false" aria-label="Open the menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="courses.html">Courses</a></li>
+            <li class="nav-item"><a class="nav-link" href="instructors.html">Instructors</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="schedule.html">Schedule</a></li>
+            <li class="nav-item"><a class="nav-link" href="library.html">Library</a></li>
+            <li class="nav-item"><a class="nav-link" href="gallery.html">Gallery</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          </ul>
+          <div id="nav-auth" class="nav-auth d-flex align-items-center gap-2 mt-2 mt-xl-0">
+            <a class="btn btn-outline-light btn-sm px-3" href="login.html">Log in</a>
+            <a class="btn btn-warning btn-sm px-3" href="signup.html">Sign up</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="page-header">
+      <div class="container-xxl px-3 px-lg-4 py-4 py-lg-5">
+        <div class="row align-items-center g-4">
+          <div class="col-12 col-lg-6">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Schedule</li>
+              </ol>
+            </nav>
+            <span class="eyebrow">Autumn semester 2026</span>
+            <h1 class="display-5 fw-bold mb-3">Weekly class schedule</h1>
+            <p class="lead text-secondary mb-0 text-measure">All times are Astana time (UTC+5). Live classes last 90 minutes and are recorded, so a missed class is never a lost class.</p>
+          </div>
+          <div class="col-12 col-lg-6 d-none d-md-block">
+            <img class="page-header-image w-100" src="images/banner-schedule.svg" alt="Weekly calendar grid next to a clock showing live class times" width="960" height="300">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight" aria-labelledby="timetable-title">
+      <div class="container-xxl px-3 px-lg-4">
+
+        <!-- filter + next class (schedule.js) -->
+        <div class="row g-3 align-items-stretch mb-4">
+          <div class="col-12 col-md-6 col-lg-5">
+            <div class="surface p-3 h-100">
+              <label for="course-filter" class="form-label">Highlight one course</label>
+              <select id="course-filter" class="form-select">
+                <option value="all">All classes</option>
+                <option value="html-css">HTML &amp; CSS Foundations</option>
+                <option value="javascript">JavaScript in Practice</option>
+                <option value="python">Python for Everyone</option>
+                <option value="sql">Data Analytics with SQL</option>
+                <option value="ux">UX &amp; UI Design Basics</option>
+                <option value="mobile">Mobile Development</option>
+                <option value="open">Open events (workshops, lectures)</option>
+              </select>
+              <p class="small text-secondary mt-2 mb-0"><i class="bi bi-floppy me-1" aria-hidden="true"></i>Your choice is remembered on this device.</p>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-7">
+            <div class="surface p-3 h-100 d-flex align-items-center gap-3">
+              <span class="icon-badge flex-shrink-0"><i class="bi bi-alarm" aria-hidden="true"></i></span>
+              <div>
+                <span class="small fw-semibold text-secondary d-block">Next live class</span>
+                <strong id="next-class" class="font-serif fs-5" aria-live="polite">—</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h2 id="timetable-title" class="visually-hidden">Timetable</h2>
+        <!-- table-responsive: on phones the table scrolls sideways instead of breaking the page -->
+        <div class="table-responsive surface">
+          <table id="timetable" class="table table-bordered align-middle mb-0 timetable">
+            <caption class="caption-top px-3">Live classes for all directions. Today's column is highlighted.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Time</th>
+                <th scope="col" data-day="1">Monday</th>
+                <th scope="col" data-day="2">Tuesday</th>
+                <th scope="col" data-day="3">Wednesday</th>
+                <th scope="col" data-day="4">Thursday</th>
+                <th scope="col" data-day="5">Friday</th>
+                <th scope="col" data-day="6">Saturday</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-start="10:00">
+                <th scope="row" class="text-nowrap">10:00 – 11:30</th>
+                <td class="text-secondary text-center">—</td>
+                <td class="text-secondary text-center">—</td>
+                <td class="text-secondary text-center">—</td>
+                <td class="text-secondary text-center">—</td>
+                <td class="text-secondary text-center">—</td>
+                <td data-course="python">Python for Everyone<br><small class="text-secondary">Intensive group</small></td>
+              </tr>
+              <tr data-start="12:00">
+                <th scope="row" class="text-nowrap">12:00 – 13:30</th>
+                <td class="text-secondary text-center">—</td>
+                <td class="text-secondary text-center">—</td>
+                <td class="text-secondary text-center">—</td>
+                <td class="text-secondary text-center">—</td>
+                <td class="text-secondary text-center">—</td>
+                <td data-course="ux">UX &amp; UI Design Basics<br><small class="text-secondary">Weekend group</small></td>
+              </tr>
+              <tr data-start="15:00">
+                <th scope="row" class="text-nowrap">15:00 – 16:30</th>
+                <td data-course="mobile">Mobile Development<br><small class="text-secondary">Advanced group</small></td>
+                <td class="text-secondary fst-italic">Self-study</td>
+                <td data-course="mobile">Mobile Development<br><small class="text-secondary">Advanced group</small></td>
+                <td class="text-secondary fst-italic">Self-study</td>
+                <td data-course="open">Project workshop<br><small class="text-secondary">All directions</small></td>
+                <td class="text-secondary text-center">—</td>
+              </tr>
+              <tr data-start="18:00">
+                <th scope="row" class="text-nowrap">18:00 – 19:30</th>
+                <td data-course="html-css">HTML &amp; CSS Foundations<br><small class="text-secondary">Evening group A</small></td>
+                <td data-course="javascript">JavaScript in Practice<br><small class="text-secondary">Evening group</small></td>
+                <td data-course="html-css">HTML &amp; CSS Foundations<br><small class="text-secondary">Evening group A</small></td>
+                <td data-course="javascript">JavaScript in Practice<br><small class="text-secondary">Evening group</small></td>
+                <td class="text-secondary fst-italic">Consultations</td>
+                <td class="text-secondary text-center">—</td>
+              </tr>
+              <tr data-start="20:00">
+                <th scope="row" class="text-nowrap">20:00 – 21:30</th>
+                <td data-course="sql">Data Analytics with SQL<br><small class="text-secondary">Evening group</small></td>
+                <td data-course="html-css">HTML &amp; CSS Foundations<br><small class="text-secondary">Evening group B</small></td>
+                <td data-course="sql">Data Analytics with SQL<br><small class="text-secondary">Evening group</small></td>
+                <td data-course="html-css">HTML &amp; CSS Foundations<br><small class="text-secondary">Evening group B</small></td>
+                <td data-course="open">Open lecture<br><small class="text-secondary">Free for everyone</small></td>
+                <td class="text-secondary text-center">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small text-secondary mt-2 mb-0 d-md-none"><i class="bi bi-arrows-expand-vertical me-1" aria-hidden="true"></i>Swipe the table sideways to see all days.</p>
+      </div>
+    </section>
+
+    <section class="section-tight" aria-labelledby="legend-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <h2 id="legend-title" class="h4 fw-bold mb-3 reveal">How to read the timetable</h2>
+        <ul class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 list-unstyled mb-0">
+          <li class="col reveal"><div class="surface p-3 h-100"><strong class="d-block mb-1"><i class="bi bi-people me-1 text-accent" aria-hidden="true"></i>Group A / B</strong><span class="small text-secondary">The same course twice — pick the slot that fits your evening.</span></div></li>
+          <li class="col reveal"><div class="surface p-3 h-100"><strong class="d-block mb-1"><i class="bi bi-house me-1 text-accent" aria-hidden="true"></i>Self-study</strong><span class="small text-secondary">No live class; the weekly practice task is published instead.</span></div></li>
+          <li class="col reveal"><div class="surface p-3 h-100"><strong class="d-block mb-1"><i class="bi bi-chat-square-dots me-1 text-accent" aria-hidden="true"></i>Consultations</strong><span class="small text-secondary">An open room where any student can join and ask questions.</span></div></li>
+          <li class="col reveal"><div class="surface p-3 h-100"><strong class="d-block mb-1"><i class="bi bi-mic me-1 text-accent" aria-hidden="true"></i>Open lecture</strong><span class="small text-secondary">A guest talk, free even without a subscription.</span></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="join-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="row g-4 g-lg-5">
+          <div class="col-12 col-lg-6 reveal">
+            <span class="eyebrow">Every lesson</span>
+            <h2 id="join-title" class="h3 fw-bold mb-3">Joining a live class</h2>
+            <ol class="list-group list-group-numbered">
+              <li class="list-group-item">Open the student portal 10 minutes before the start.</li>
+              <li class="list-group-item">Click the room link on the card of your group.</li>
+              <li class="list-group-item">Turn the microphone on when you want to ask — interrupting is welcome.</li>
+              <li class="list-group-item">Download the notes and start the practice task the same evening.</li>
+            </ol>
+          </div>
+          <div class="col-12 col-lg-6 reveal">
+            <span class="eyebrow">Choose your rhythm</span>
+            <h2 class="h3 fw-bold mb-3">Study formats</h2>
+            <div class="table-responsive surface">
+              <table class="table align-middle mb-0">
+                <caption class="caption-top px-3">The three study formats</caption>
+                <thead><tr><th scope="col">Format</th><th scope="col">Classes a week</th><th scope="col">Best for</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Evening</th><td>2–3 (18:00 or 20:00)</td><td>Students who work or study in the daytime</td></tr>
+                  <tr><th scope="row">Weekend</th><td>2 (Saturday)</td><td>Busy weekdays, free Saturdays</td></tr>
+                  <tr><th scope="row">Intensive</th><td>4 (daytime)</td><td>Finishing a course twice as fast</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="alert alert-primary mt-3 mb-0" role="note">
+              <strong>Attendance:</strong> miss more than four classes in a module and you can repeat that module for free.
+              <a class="alert-link" href="courses.html#enrol">Enrol in a course</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================ FOOTER ================================ -->
+  <footer class="site-footer">
+    <div class="container-xxl px-3 px-lg-4 pt-5 pb-3">
+      <div class="row g-4">
+        <div class="col-12 col-lg-4">
+          <a class="d-inline-flex align-items-center gap-2 mb-3" href="index.html">
+            <img src="images/logo.svg" alt="" width="36" height="36">
+            <span class="brand-name fs-5">EduSphere</span>
+          </a>
+          <p class="small mb-2">
+            Online courses with live classes, a personal mentor and a real project at
+            the end of every course. Made for students in Kazakhstan who want a portfolio,
+            not just watched videos.
+          </p>
+          <p class="small mb-0"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i>Mangilik El 55/11, Astana</p>
+        </div>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Explore EduSphere">
+          <h2 class="mb-3">Explore</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="instructors.html">Instructors</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="library.html">Learning library</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="about.html">About us</a></li>
+          </ul>
+        </nav>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Your account">
+          <h2 class="mb-3">Your account</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="signup.html">Sign up</a></li>
+            <li><a href="login.html">Log in</a></li>
+            <li><a href="profile.html">My profile</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+          </ul>
+        </nav>
+
+        <div class="col-12 col-md-4 col-lg-4">
+          <h2 class="mb-3">Open lectures</h2>
+          <!-- newsletter form: validated by script.js -->
+          <form id="newsletter-form" novalidate>
+            <label for="newsletter-email" class="small mb-2">A free guest lecture every Friday. Leave your email:</label>
+            <div class="input-group">
+              <input id="newsletter-email" class="form-control" type="text" inputmode="email" autocomplete="email" placeholder="name@example.com">
+              <button class="btn btn-warning" type="submit">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <p class="footer-bottom small text-center pt-3 mt-4 mb-0">
+        &copy; 2026 EduSphere · Front-End final project by <strong>The Ethernet</strong> (SE-2510):
+        Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+      </p>
+    </div>
+  </footer>
+
+  <!-- libraries, then the shared scripts, then the script of this page -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/4.0.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/schedule.js"></script>
+</body>
+</html>

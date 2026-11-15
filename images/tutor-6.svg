@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img">
+  <title>Portrait of the mobile development mentor</title>
+  <rect width="240" height="240" fill="#e4e2fb"/>
+  <circle cx="120" cy="120" r="120" fill="#8f88f2"/>
+  <path d="M68 120 c-6 -50 20 -80 52 -80 s58 30 52 80 v40 h-104 z" fill="#2b1d16"/>
+  <circle cx="120" cy="102" r="42" fill="#ffd9b3"/>
+  <path d="M80 92 c6 -26 22 -38 40 -38 s34 12 40 38 c-12 -12 -26 -16 -40 -16 s-28 4 -40 16 z" fill="#2b1d16"/>
+  <path d="M120 150 c-42 0 -72 24 -72 56 v34 h144 v-34 c0 -32 -30 -56 -72 -56 z" fill="#16a394"/>
+  <circle cx="120" cy="174" r="7" fill="#f2a33c"/>
+</svg>

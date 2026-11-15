@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <!-- =====================================================================
+       EduSphere — online learning platform (Front-End final project)
+       Team    : The Ethernet, group SE-2510
+       Members : Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+       Page    : library.html — Learning library (external API)
+       Author  : Ramil Zhunussov
+       On this page:
+         - Wikipedia API: search + article summary with fetch() and async/await (library.js)
+         - Loading skeletons, friendly error message with a Retry button
+         - Search history saved in localStorage
+         - Reading list saved to the user's profile
+       ===================================================================== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Look up any programming or design topic. Articles come live from the Wikipedia API.">
+  <meta name="author" content="The Ethernet: Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin">
+  <meta name="theme-color" content="#2f2a77">
+  <title>Learning Library — EduSphere</title>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+  <script>
+    // Applies the saved light / dark mode BEFORE the page is drawn, so it never flashes.
+    // The "js" class tells the CSS that JavaScript works (used by the reveal animations).
+    (function () {
+      var theme = 'light';
+      try {
+        theme = localStorage.getItem('edusphere-theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (error) { /* storage blocked: light mode */ }
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+  <!-- Bootstrap and Bootstrap Icons from a CDN, then our own styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============================ NAVBAR ================================
+       navbar-expand-xl: links in one row from 1200px, a hamburger below.
+       The light / dark switch stays visible on every screen size.
+       #nav-auth shows "Log in / Sign up"; script.js replaces it with the
+       user's menu when somebody is logged in.
+       ===================================================================== -->
+  <header>
+    <nav class="navbar navbar-expand-xl site-nav py-2" data-bs-theme="dark" aria-label="Main navigation">
+      <div class="container-xxl px-3 px-lg-4">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+          <img src="images/logo.svg" alt="" width="42" height="42">
+          <span class="d-flex flex-column lh-1">
+            <span class="brand-name">EduSphere</span>
+            <small class="text-warning text-uppercase brand-tagline mt-1">Learn · Practise · Grow</small>
+          </span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2 gap-sm-3 ms-auto ms-xl-3 order-xl-last">
+          <!-- light / dark mode switch (script.js) -->
+          <button class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Dark mode">
+            <i class="bi bi-sun" aria-hidden="true"></i>
+            <i class="bi bi-moon-stars" aria-hidden="true"></i>
+            <span class="theme-switch-knob" aria-hidden="true">
+              <i class="bi bi-sun-fill icon-sun"></i><i class="bi bi-moon-stars-fill icon-moon"></i>
+            </span>
+          </button>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                  aria-controls="mainNav" aria-expanded="false" aria-label="Open the menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="courses.html">Courses</a></li>
+            <li class="nav-item"><a class="nav-link" href="instructors.html">Instructors</a></li>
+            <li class="nav-item"><a class="nav-link" href="schedule.html">Schedule</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="library.html">Library</a></li>
+            <li class="nav-item"><a class="nav-link" href="gallery.html">Gallery</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          </ul>
+          <div id="nav-auth" class="nav-auth d-flex align-items-center gap-2 mt-2 mt-xl-0">
+            <a class="btn btn-outline-light btn-sm px-3" href="login.html">Log in</a>
+            <a class="btn btn-warning btn-sm px-3" href="signup.html">Sign up</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="page-header">
+      <div class="container-xxl px-3 px-lg-4 py-4 py-lg-5">
+        <div class="row align-items-center g-4">
+          <div class="col-12 col-lg-6">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Library</li>
+              </ol>
+            </nav>
+            <span class="eyebrow">Learning library</span>
+            <h1 class="display-5 fw-bold mb-3">Look up any topic in seconds</h1>
+            <p class="lead text-secondary mb-0 text-measure">Stuck on a word from a lesson? Search Wikipedia without leaving EduSphere: read a short summary, open the full article and keep the useful ones in your reading list.</p>
+          </div>
+          <div class="col-12 col-lg-6 d-none d-md-block">
+            <img class="page-header-image w-100" src="images/banner-library.svg" alt="Bookshelf, an open book and a magnifying glass over a search bar" width="960" height="300">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight" aria-labelledby="search-title">
+      <div class="container-xxl px-3 px-lg-4">
+
+        <!-- ======================= SEARCH FORM ======================= -->
+        <div class="surface p-3 p-sm-4 mb-4">
+          <h2 id="search-title" class="h5 fw-bold mb-3">Search the library</h2>
+          <form id="library-form" role="search" novalidate>
+            <label for="library-query" class="form-label visually-hidden">Topic to look up</label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-text" aria-hidden="true"><i class="bi bi-search"></i></span>
+              <input id="library-query" class="form-control" type="search" autocomplete="off" placeholder="e.g. flexbox, recursion, HTTP, SQL join">
+              <button id="library-submit" class="btn btn-primary btn-icon-spin" type="submit"><i class="bi bi-stars me-1" aria-hidden="true"></i>Search</button>
+            </div>
+          </form>
+
+          <div class="mt-3">
+            <span class="small fw-semibold text-secondary me-2">Topics from our courses:</span>
+            <!-- library.js adds one chip per course topic (js/data.js) -->
+            <div id="topic-chips" class="d-inline-flex flex-wrap gap-2 align-middle"></div>
+          </div>
+
+          <div id="history-box" class="mt-3" hidden>
+            <span class="small fw-semibold text-secondary me-2">Your recent searches:</span>
+            <div id="history-chips" class="d-inline-flex flex-wrap gap-2 align-middle"></div>
+            <button id="clear-history" class="btn btn-link btn-sm" type="button">Clear history</button>
+          </div>
+        </div>
+
+        <!-- loading / error / result messages are announced to screen readers -->
+        <p id="library-status" class="fw-semibold mb-3" aria-live="polite"></p>
+
+        <!-- ========================= RESULTS ========================= -->
+        <div id="library-results" class="row g-4" aria-busy="false">
+          <div class="col-12">
+            <div class="empty-state py-5">
+              <i class="bi bi-book-half display-5 d-block mb-3 text-accent" aria-hidden="true"></i>
+              <p class="mb-1 fw-semibold">Type a topic or pick one of the chips above.</p>
+              <p class="small mb-0">Articles come live from the Wikipedia API.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= READING LIST ======================== -->
+    <section class="section-tight" aria-labelledby="reading-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="surface p-3 p-sm-4">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <h2 id="reading-title" class="h5 fw-bold mb-0"><i class="bi bi-journal-bookmark me-2 text-accent" aria-hidden="true"></i>My reading list</h2>
+            <a class="btn btn-link btn-sm" href="profile.html#reading">Open in my profile</a>
+          </div>
+          <div id="reading-box"></div>
+        </div>
+        <p class="small text-secondary mt-3 mb-0">
+          Article texts and images come from <a href="https://en.wikipedia.org/" target="_blank" rel="noopener">Wikipedia</a>
+          and are available under the Creative Commons Attribution-ShareAlike licence.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================ FOOTER ================================ -->
+  <footer class="site-footer">
+    <div class="container-xxl px-3 px-lg-4 pt-5 pb-3">
+      <div class="row g-4">
+        <div class="col-12 col-lg-4">
+          <a class="d-inline-flex align-items-center gap-2 mb-3" href="index.html">
+            <img src="images/logo.svg" alt="" width="36" height="36">
+            <span class="brand-name fs-5">EduSphere</span>
+          </a>
+          <p class="small mb-2">
+            Online courses with live classes, a personal mentor and a real project at
+            the end of every course. Made for students in Kazakhstan who want a portfolio,
+            not just watched videos.
+          </p>
+          <p class="small mb-0"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i>Mangilik El 55/11, Astana</p>
+        </div>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Explore EduSphere">
+          <h2 class="mb-3">Explore</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="instructors.html">Instructors</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="library.html">Learning library</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="about.html">About us</a></li>
+          </ul>
+        </nav>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Your account">
+          <h2 class="mb-3">Your account</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="signup.html">Sign up</a></li>
+            <li><a href="login.html">Log in</a></li>
+            <li><a href="profile.html">My profile</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+          </ul>
+        </nav>
+
+        <div class="col-12 col-md-4 col-lg-4">
+          <h2 class="mb-3">Open lectures</h2>
+          <!-- newsletter form: validated by script.js -->
+          <form id="newsletter-form" novalidate>
+            <label for="newsletter-email" class="small mb-2">A free guest lecture every Friday. Leave your email:</label>
+            <div class="input-group">
+              <input id="newsletter-email" class="form-control" type="text" inputmode="email" autocomplete="email" placeholder="name@example.com">
+              <button class="btn btn-warning" type="submit">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <p class="footer-bottom small text-center pt-3 mt-4 mb-0">
+        &copy; 2026 EduSphere · Front-End final project by <strong>The Ethernet</strong> (SE-2510):
+        Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+      </p>
+    </div>
+  </footer>
+
+  <!-- libraries, then the shared scripts, then the script of this page -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/4.0.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/library.js"></script>
+</body>
+</html>

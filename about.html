@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <!-- =====================================================================
+       EduSphere — online learning platform (Front-End final project)
+       Team    : The Ethernet, group SE-2510
+       Members : Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+       Page    : about.html — About us
+       Author  : Maxim Batyushkin
+       On this page:
+         - Animated counters (script.js)
+         - Timeline and team cards
+       ===================================================================== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Why EduSphere exists, how it grew and the student team behind the website.">
+  <meta name="author" content="The Ethernet: Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin">
+  <meta name="theme-color" content="#2f2a77">
+  <title>About Us — EduSphere</title>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+  <script>
+    // Applies the saved light / dark mode BEFORE the page is drawn, so it never flashes.
+    // The "js" class tells the CSS that JavaScript works (used by the reveal animations).
+    (function () {
+      var theme = 'light';
+      try {
+        theme = localStorage.getItem('edusphere-theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (error) { /* storage blocked: light mode */ }
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+  <!-- Bootstrap and Bootstrap Icons from a CDN, then our own styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============================ NAVBAR ================================
+       navbar-expand-xl: links in one row from 1200px, a hamburger below.
+       The light / dark switch stays visible on every screen size.
+       #nav-auth shows "Log in / Sign up"; script.js replaces it with the
+       user's menu when somebody is logged in.
+       ===================================================================== -->
+  <header>
+    <nav class="navbar navbar-expand-xl site-nav py-2" data-bs-theme="dark" aria-label="Main navigation">
+      <div class="container-xxl px-3 px-lg-4">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+          <img src="images/logo.svg" alt="" width="42" height="42">
+          <span class="d-flex flex-column lh-1">
+            <span class="brand-name">EduSphere</span>
+            <small class="text-warning text-uppercase brand-tagline mt-1">Learn · Practise · Grow</small>
+          </span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2 gap-sm-3 ms-auto ms-xl-3 order-xl-last">
+          <!-- light / dark mode switch (script.js) -->
+          <button class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Dark mode">
+            <i class="bi bi-sun" aria-hidden="true"></i>
+            <i class="bi bi-moon-stars" aria-hidden="true"></i>
+            <span class="theme-switch-knob" aria-hidden="true">
+              <i class="bi bi-sun-fill icon-sun"></i><i class="bi bi-moon-stars-fill icon-moon"></i>
+            </span>
+          </button>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                  aria-controls="mainNav" aria-expanded="false" aria-label="Open the menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="courses.html">Courses</a></li>
+            <li class="nav-item"><a class="nav-link" href="instructors.html">Instructors</a></li>
+            <li class="nav-item"><a class="nav-link" href="schedule.html">Schedule</a></li>
+            <li class="nav-item"><a class="nav-link" href="library.html">Library</a></li>
+            <li class="nav-item"><a class="nav-link" href="gallery.html">Gallery</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="about.html">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          </ul>
+          <div id="nav-auth" class="nav-auth d-flex align-items-center gap-2 mt-2 mt-xl-0">
+            <a class="btn btn-outline-light btn-sm px-3" href="login.html">Log in</a>
+            <a class="btn btn-warning btn-sm px-3" href="signup.html">Sign up</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="page-header">
+      <div class="container-xxl px-3 px-lg-4 py-4 py-lg-5">
+        <div class="row align-items-center g-4">
+          <div class="col-12 col-lg-6">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">About</li>
+              </ol>
+            </nav>
+            <span class="eyebrow">About EduSphere</span>
+            <h1 class="display-5 fw-bold mb-3">Practice first, theory second</h1>
+            <p class="lead text-secondary mb-0 text-measure">On most platforms a student watches for ten hours and writes code for one. We turn that around: every module is one short theory block and three practical tasks checked by a mentor.</p>
+          </div>
+          <div class="col-12 col-lg-6 d-none d-md-block">
+            <img class="page-header-image w-100" src="images/banner-about.svg" alt="Three students collaborating around a shared screen in a study room" width="960" height="300">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= MISSION ========================= -->
+    <section class="section" aria-labelledby="mission-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="row g-4 g-lg-5 align-items-center">
+          <div class="col-12 col-lg-6 reveal">
+            <span class="eyebrow">Our mission</span>
+            <h2 id="mission-title" class="display-6 fw-bold mb-3">Make practice the centre of the course, not a bonus</h2>
+            <p class="text-secondary">No one moves on to the next module until the mentor has accepted the work. It is slower in the first week and much faster by the last one — because nothing is left half-understood.</p>
+            <p class="text-secondary mb-0">Our students are first-year university students, career changers and school leavers in Kazakhstan who want a portfolio they can show, not a pile of watched videos.</p>
+          </div>
+          <div class="col-12 col-lg-6">
+            <div class="row row-cols-1 row-cols-sm-2 g-3">
+              <div class="col reveal"><div class="surface card-hover p-4 h-100"><span class="icon-badge mb-3"><i class="bi bi-code-slash" aria-hidden="true"></i></span><h3 class="h6 fw-bold">Real projects</h3><p class="small text-secondary mb-0">Every course ends with something you built yourself.</p></div></div>
+              <div class="col reveal"><div class="surface card-hover p-4 h-100"><span class="icon-badge mb-3"><i class="bi bi-person-video3" aria-hidden="true"></i></span><h3 class="h6 fw-bold">Live teaching</h3><p class="small text-secondary mb-0">Questions are answered in the class, not in a forum a week later.</p></div></div>
+              <div class="col reveal"><div class="surface card-hover p-4 h-100"><span class="icon-badge mb-3"><i class="bi bi-chat-left-text" aria-hidden="true"></i></span><h3 class="h6 fw-bold">Honest feedback</h3><p class="small text-secondary mb-0">Mentors comment the code line by line within 24 hours.</p></div></div>
+              <div class="col reveal"><div class="surface card-hover p-4 h-100"><span class="icon-badge mb-3"><i class="bi bi-universal-access" aria-hidden="true"></i></span><h3 class="h6 fw-bold">Open to everyone</h3><p class="small text-secondary mb-0">A student discount and a free first class in every course.</p></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= NUMBERS ========================= -->
+    <section class="section-tight bg-tint" aria-labelledby="numbers-title">
+      <div class="container-xxl px-3 px-lg-4 py-3">
+        <h2 id="numbers-title" class="h3 fw-bold text-center mb-4">EduSphere in numbers</h2>
+        <!-- the numbers count up when they appear on screen (script.js) -->
+        <ul class="row row-cols-2 row-cols-lg-4 g-3 list-unstyled mb-0">
+          <li class="col"><div class="surface stat-card p-4 h-100"><strong class="d-block display-6 fw-bold font-serif text-accent counter" data-count="1800" data-suffix="+">1,800+</strong><span class="small text-secondary">students since 2023</span></div></li>
+          <li class="col"><div class="surface stat-card p-4 h-100"><strong class="d-block display-6 fw-bold font-serif text-accent counter" data-count="12500" data-suffix="+">12,500+</strong><span class="small text-secondary">code reviews written</span></div></li>
+          <li class="col"><div class="surface stat-card p-4 h-100"><strong class="d-block display-6 fw-bold font-serif text-accent counter" data-count="87" data-suffix="%">87%</strong><span class="small text-secondary">graduates hired within six months</span></div></li>
+          <li class="col"><div class="surface stat-card p-4 h-100"><strong class="d-block display-6 fw-bold font-serif text-accent counter" data-count="4.9" data-decimals="1" data-suffix=" / 5">4.9 / 5</strong><span class="small text-secondary">average mentor rating</span></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ========================= STORY ========================= -->
+    <section class="section" aria-labelledby="story-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="text-center text-measure mx-auto mb-5 reveal">
+          <span class="eyebrow">Our story</span>
+          <h2 id="story-title" class="display-6 fw-bold">From one evening group to a school</h2>
+        </div>
+        <ol class="list-unstyled row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4 mb-0">
+          <li class="col reveal"><div class="surface p-4 h-100"><span class="badge text-bg-warning mb-2">2023</span><h3 class="h5">The first group</h3><p class="small text-secondary mb-0">Twelve students, one mentor and a borrowed classroom in Astana.</p></div></li>
+          <li class="col reveal"><div class="surface p-4 h-100"><span class="badge text-bg-warning mb-2">2024</span><h3 class="h5">Going online</h3><p class="small text-secondary mb-0">Live classes with recordings let students from every region join.</p></div></li>
+          <li class="col reveal"><div class="surface p-4 h-100"><span class="badge text-bg-warning mb-2">2025</span><h3 class="h5">Four directions</h3><p class="small text-secondary mb-0">Data analytics, design and mobile development joined web development.</p></div></li>
+          <li class="col reveal"><div class="surface p-4 h-100"><span class="badge text-bg-warning mb-2">2026</span><h3 class="h5">This website</h3><p class="small text-secondary mb-0">Accounts, saved courses and a learning library — built by our students.</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ========================= TEAM ========================= -->
+    <section class="section-tight" aria-labelledby="team-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="text-center text-measure mx-auto mb-4 reveal">
+          <span class="eyebrow">The Ethernet · SE-2510</span>
+          <h2 id="team-title" class="display-6 fw-bold">The team behind the website</h2>
+          <p class="text-secondary mb-0">Three Software Engineering students of Astana IT University built EduSphere as their Front-End final project.</p>
+        </div>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+          <div class="col reveal">
+            <article class="card card-hover h-100 text-center">
+              <div class="img-zoom"><img class="card-img-top person-photo" src="images/avatar-member-1.svg" width="240" height="240" alt="Avatar of Ramil Zhunussov"></div>
+              <div class="card-body">
+                <h3 class="h5 mb-1">Ramil Zhunussov</h3>
+                <p class="small fw-semibold text-accent mb-2">Team lead · accounts &amp; API</p>
+                <p class="small text-secondary mb-0">Sign up, log in and the profile page, the Wikipedia library, the home page and the hosting.</p>
+              </div>
+            </article>
+          </div>
+          <div class="col reveal">
+            <article class="card card-hover h-100 text-center">
+              <div class="img-zoom"><img class="card-img-top person-photo" src="images/avatar-member-2.svg" width="240" height="240" alt="Avatar of Maxim Batyushkin"></div>
+              <div class="card-body">
+                <h3 class="h5 mb-1">Maxim Batyushkin</h3>
+                <p class="small fw-semibold text-accent mb-2">Design · themes · animations</p>
+                <p class="small text-secondary mb-0">The design system, light and dark modes, responsive layout, animations, the gallery and this page.</p>
+              </div>
+            </article>
+          </div>
+          <div class="col reveal">
+            <article class="card card-hover h-100 text-center">
+              <div class="img-zoom"><img class="card-img-top person-photo" src="images/avatar-member-3.svg" width="240" height="240" alt="Avatar of Azamat Mustafin"></div>
+              <div class="card-body">
+                <h3 class="h5 mb-1">Azamat Mustafin</h3>
+                <p class="small fw-semibold text-accent mb-2">Forms · search · filters</p>
+                <p class="small text-secondary mb-0">Validation of every form, the course search and filters, the schedule and the contact page.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="about-cta-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="cta-band text-center p-4 p-md-5 reveal">
+          <h2 id="about-cta-title" class="display-6 fw-bold">Come to a free class</h2>
+          <p class="mb-4 text-white text-opacity-75">See how a live EduSphere lesson works before you pay anything.</p>
+          <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a class="btn btn-warning btn-lg" href="schedule.html">See the schedule</a>
+            <a class="btn btn-outline-light btn-lg" href="contact.html">Contact us</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================ FOOTER ================================ -->
+  <footer class="site-footer">
+    <div class="container-xxl px-3 px-lg-4 pt-5 pb-3">
+      <div class="row g-4">
+        <div class="col-12 col-lg-4">
+          <a class="d-inline-flex align-items-center gap-2 mb-3" href="index.html">
+            <img src="images/logo.svg" alt="" width="36" height="36">
+            <span class="brand-name fs-5">EduSphere</span>
+          </a>
+          <p class="small mb-2">
+            Online courses with live classes, a personal mentor and a real project at
+            the end of every course. Made for students in Kazakhstan who want a portfolio,
+            not just watched videos.
+          </p>
+          <p class="small mb-0"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i>Mangilik El 55/11, Astana</p>
+        </div>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Explore EduSphere">
+          <h2 class="mb-3">Explore</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="instructors.html">Instructors</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="library.html">Learning library</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="about.html">About us</a></li>
+          </ul>
+        </nav>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Your account">
+          <h2 class="mb-3">Your account</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="signup.html">Sign up</a></li>
+            <li><a href="login.html">Log in</a></li>
+            <li><a href="profile.html">My profile</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+          </ul>
+        </nav>
+
+        <div class="col-12 col-md-4 col-lg-4">
+          <h2 class="mb-3">Open lectures</h2>
+          <!-- newsletter form: validated by script.js -->
+          <form id="newsletter-form" novalidate>
+            <label for="newsletter-email" class="small mb-2">A free guest lecture every Friday. Leave your email:</label>
+            <div class="input-group">
+              <input id="newsletter-email" class="form-control" type="text" inputmode="email" autocomplete="email" placeholder="name@example.com">
+              <button class="btn btn-warning" type="submit">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <p class="footer-bottom small text-center pt-3 mt-4 mb-0">
+        &copy; 2026 EduSphere · Front-End final project by <strong>The Ethernet</strong> (SE-2510):
+        Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+      </p>
+    </div>
+  </footer>
+
+  <!-- libraries, then the shared scripts, then the script of this page -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/4.0.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

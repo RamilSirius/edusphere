@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <!-- =====================================================================
+       EduSphere — online learning platform (Front-End final project)
+       Team    : The Ethernet, group SE-2510
+       Members : Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+       Page    : signup.html — Sign up
+       Author  : Ramil Zhunussov
+       On this page:
+         - Sign-up simulation: the user is saved in localStorage (auth.js)
+         - Validation of name, email, phone, password and confirmation
+         - Live password strength meter and show / hide password
+       ===================================================================== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create a free EduSphere student account.">
+  <meta name="author" content="The Ethernet: Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin">
+  <meta name="theme-color" content="#2f2a77">
+  <title>Sign Up — EduSphere</title>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+  <script>
+    // Applies the saved light / dark mode BEFORE the page is drawn, so it never flashes.
+    // The "js" class tells the CSS that JavaScript works (used by the reveal animations).
+    (function () {
+      var theme = 'light';
+      try {
+        theme = localStorage.getItem('edusphere-theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (error) { /* storage blocked: light mode */ }
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+  <!-- Bootstrap and Bootstrap Icons from a CDN, then our own styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============================ NAVBAR ================================
+       navbar-expand-xl: links in one row from 1200px, a hamburger below.
+       The light / dark switch stays visible on every screen size.
+       #nav-auth shows "Log in / Sign up"; script.js replaces it with the
+       user's menu when somebody is logged in.
+       ===================================================================== -->
+  <header>
+    <nav class="navbar navbar-expand-xl site-nav py-2" data-bs-theme="dark" aria-label="Main navigation">
+      <div class="container-xxl px-3 px-lg-4">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+          <img src="images/logo.svg" alt="" width="42" height="42">
+          <span class="d-flex flex-column lh-1">
+            <span class="brand-name">EduSphere</span>
+            <small class="text-warning text-uppercase brand-tagline mt-1">Learn · Practise · Grow</small>
+          </span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2 gap-sm-3 ms-auto ms-xl-3 order-xl-last">
+          <!-- light / dark mode switch (script.js) -->
+          <button class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Dark mode">
+            <i class="bi bi-sun" aria-hidden="true"></i>
+            <i class="bi bi-moon-stars" aria-hidden="true"></i>
+            <span class="theme-switch-knob" aria-hidden="true">
+              <i class="bi bi-sun-fill icon-sun"></i><i class="bi bi-moon-stars-fill icon-moon"></i>
+            </span>
+          </button>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                  aria-controls="mainNav" aria-expanded="false" aria-label="Open the menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="courses.html">Courses</a></li>
+            <li class="nav-item"><a class="nav-link" href="instructors.html">Instructors</a></li>
+            <li class="nav-item"><a class="nav-link" href="schedule.html">Schedule</a></li>
+            <li class="nav-item"><a class="nav-link" href="library.html">Library</a></li>
+            <li class="nav-item"><a class="nav-link" href="gallery.html">Gallery</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          </ul>
+          <div id="nav-auth" class="nav-auth d-flex align-items-center gap-2 mt-2 mt-xl-0">
+            <a class="btn btn-outline-light btn-sm px-3" href="login.html">Log in</a>
+            <a class="btn btn-warning btn-sm px-3" href="signup.html">Sign up</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="section-tight">
+      <div class="container auth-wrap px-3">
+        <div class="card auth-card">
+          <div class="row g-0">
+
+            <!-- left: why create an account -->
+            <div class="col-12 col-lg-5 auth-side p-4 p-lg-5 d-flex flex-column">
+              <span class="eyebrow text-warning">Free account</span>
+              <h1 class="h2 fw-bold mb-3">Join EduSphere</h1>
+              <p class="text-white text-opacity-75">One account keeps everything you do on the site in one place.</p>
+              <ul class="list-unstyled d-grid gap-3 my-4">
+                <li class="d-flex gap-2"><i class="bi bi-heart-fill" aria-hidden="true"></i><span>Save courses and find them in your profile</span></li>
+                <li class="d-flex gap-2"><i class="bi bi-calendar-check-fill" aria-hidden="true"></i><span>Enrol in one click — your contacts are filled in</span></li>
+                <li class="d-flex gap-2"><i class="bi bi-journal-bookmark-fill" aria-hidden="true"></i><span>Build a reading list in the learning library</span></li>
+              </ul>
+              <img class="img-fluid mt-auto rounded-4" src="images/auth-welcome.svg" width="480" height="300"
+                   alt="Student waving from a laptop screen next to a graduation cap">
+            </div>
+
+            <!-- right: the form (checked by validation.js, saved by auth.js) -->
+            <div class="col-12 col-lg-7 p-4 p-lg-5">
+              <h2 class="h3 fw-bold mb-1">Create your account</h2>
+              <p class="text-secondary mb-4">Already registered? <a href="login.html">Log in</a></p>
+
+              <form id="signup-form" novalidate>
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label for="signup-name" class="form-label">Full name <span class="required-mark">*</span></label>
+                    <input id="signup-name" class="form-control" type="text" autocomplete="name" placeholder="Aisulu Amangeldy">
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label for="signup-email" class="form-label">Email <span class="required-mark">*</span></label>
+                    <input id="signup-email" class="form-control" type="text" inputmode="email" autocomplete="email" placeholder="name@example.com">
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label for="signup-phone" class="form-label">Phone <span class="required-mark">*</span></label>
+                    <input id="signup-phone" class="form-control" type="tel" autocomplete="tel" placeholder="+7 701 234 56 78">
+                  </div>
+
+                  <div class="col-12">
+                    <label for="signup-password" class="form-label">Password <span class="required-mark">*</span></label>
+                    <div class="input-group">
+                      <input id="signup-password" class="form-control" type="password" autocomplete="new-password" aria-describedby="password-rules">
+                      <button class="btn btn-outline-secondary btn-toggle-password" type="button" data-toggle-password="signup-password" aria-label="Show password">
+                        <i class="bi bi-eye" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                    <!-- strength meter and rules, updated while typing (auth.js) -->
+                    <div class="d-flex align-items-center gap-2 mt-2">
+                      <div class="password-meter flex-grow-1"><div id="password-meter-bar" class="password-meter-bar"></div></div>
+                      <span id="password-strength" class="small fw-semibold text-secondary" aria-live="polite">Too weak</span>
+                    </div>
+                    <ul id="password-rules" class="password-rules list-unstyled row row-cols-1 row-cols-sm-2 small mt-2 mb-0">
+                      <li class="col" data-rule="length">8–64 characters</li>
+                      <li class="col" data-rule="upper">A capital letter (A–Z)</li>
+                      <li class="col" data-rule="lower">A small letter (a–z)</li>
+                      <li class="col" data-rule="digit">A digit (0–9)</li>
+                      <li class="col" data-rule="symbol">A symbol, e.g. ! ? # %</li>
+                      <li class="col" data-rule="noSpaces">No spaces</li>
+                    </ul>
+                  </div>
+
+                  <div class="col-12">
+                    <label for="signup-confirm" class="form-label">Repeat the password <span class="required-mark">*</span></label>
+                    <div class="input-group">
+                      <input id="signup-confirm" class="form-control" type="password" autocomplete="new-password">
+                      <button class="btn btn-outline-secondary btn-toggle-password" type="button" data-toggle-password="signup-confirm" aria-label="Show password">
+                        <i class="bi bi-eye" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="form-check">
+                      <input id="signup-terms" class="form-check-input" type="checkbox">
+                      <label for="signup-terms" class="form-check-label">I agree that EduSphere keeps my details to run my account. <span class="required-mark">*</span></label>
+                    </div>
+                  </div>
+
+                  <div class="col-12 d-grid pt-2">
+                    <button class="btn btn-primary btn-lg btn-icon-spin" type="submit">
+                      <i class="bi bi-person-plus me-1" aria-hidden="true"></i> Create account
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              <p class="small text-secondary mt-4 mb-0">
+                <i class="bi bi-shield-lock me-1" aria-hidden="true"></i>
+                This is a student project without a server: your account is stored only in this browser
+                (localStorage), and the password is saved as a SHA-256 hash, never as plain text.
+                Please do not use a real password.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================ FOOTER ================================ -->
+  <footer class="site-footer">
+    <div class="container-xxl px-3 px-lg-4 pt-5 pb-3">
+      <div class="row g-4">
+        <div class="col-12 col-lg-4">
+          <a class="d-inline-flex align-items-center gap-2 mb-3" href="index.html">
+            <img src="images/logo.svg" alt="" width="36" height="36">
+            <span class="brand-name fs-5">EduSphere</span>
+          </a>
+          <p class="small mb-2">
+            Online courses with live classes, a personal mentor and a real project at
+            the end of every course. Made for students in Kazakhstan who want a portfolio,
+            not just watched videos.
+          </p>
+          <p class="small mb-0"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i>Mangilik El 55/11, Astana</p>
+        </div>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Explore EduSphere">
+          <h2 class="mb-3">Explore</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="instructors.html">Instructors</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="library.html">Learning library</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="about.html">About us</a></li>
+          </ul>
+        </nav>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Your account">
+          <h2 class="mb-3">Your account</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="signup.html">Sign up</a></li>
+            <li><a href="login.html">Log in</a></li>
+            <li><a href="profile.html">My profile</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+          </ul>
+        </nav>
+
+        <div class="col-12 col-md-4 col-lg-4">
+          <h2 class="mb-3">Open lectures</h2>
+          <!-- newsletter form: validated by script.js -->
+          <form id="newsletter-form" novalidate>
+            <label for="newsletter-email" class="small mb-2">A free guest lecture every Friday. Leave your email:</label>
+            <div class="input-group">
+              <input id="newsletter-email" class="form-control" type="text" inputmode="email" autocomplete="email" placeholder="name@example.com">
+              <button class="btn btn-warning" type="submit">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <p class="footer-bottom small text-center pt-3 mt-4 mb-0">
+        &copy; 2026 EduSphere · Front-End final project by <strong>The Ethernet</strong> (SE-2510):
+        Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+      </p>
+    </div>
+  </footer>
+
+  <!-- libraries, then the shared scripts, then the script of this page -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/4.0.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

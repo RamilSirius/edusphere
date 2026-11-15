@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <!-- =====================================================================
+       EduSphere — online learning platform (Front-End final project)
+       Team    : The Ethernet, group SE-2510
+       Members : Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+       Page    : instructors.html — Instructors
+       Author  : Maxim Batyushkin
+       On this page:
+         - Filter mentors by direction (instructors.js)
+         - Become-a-mentor form with JavaScript validation
+       ===================================================================== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Meet the EduSphere instructors, filter them by direction, see consultation hours and apply to become a mentor.">
+  <meta name="author" content="The Ethernet: Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin">
+  <meta name="theme-color" content="#2f2a77">
+  <title>Instructors & Mentors — EduSphere</title>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+  <script>
+    // Applies the saved light / dark mode BEFORE the page is drawn, so it never flashes.
+    // The "js" class tells the CSS that JavaScript works (used by the reveal animations).
+    (function () {
+      var theme = 'light';
+      try {
+        theme = localStorage.getItem('edusphere-theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (error) { /* storage blocked: light mode */ }
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+  <!-- Bootstrap and Bootstrap Icons from a CDN, then our own styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============================ NAVBAR ================================
+       navbar-expand-xl: links in one row from 1200px, a hamburger below.
+       The light / dark switch stays visible on every screen size.
+       #nav-auth shows "Log in / Sign up"; script.js replaces it with the
+       user's menu when somebody is logged in.
+       ===================================================================== -->
+  <header>
+    <nav class="navbar navbar-expand-xl site-nav py-2" data-bs-theme="dark" aria-label="Main navigation">
+      <div class="container-xxl px-3 px-lg-4">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+          <img src="images/logo.svg" alt="" width="42" height="42">
+          <span class="d-flex flex-column lh-1">
+            <span class="brand-name">EduSphere</span>
+            <small class="text-warning text-uppercase brand-tagline mt-1">Learn · Practise · Grow</small>
+          </span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2 gap-sm-3 ms-auto ms-xl-3 order-xl-last">
+          <!-- light / dark mode switch (script.js) -->
+          <button class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Dark mode">
+            <i class="bi bi-sun" aria-hidden="true"></i>
+            <i class="bi bi-moon-stars" aria-hidden="true"></i>
+            <span class="theme-switch-knob" aria-hidden="true">
+              <i class="bi bi-sun-fill icon-sun"></i><i class="bi bi-moon-stars-fill icon-moon"></i>
+            </span>
+          </button>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                  aria-controls="mainNav" aria-expanded="false" aria-label="Open the menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="courses.html">Courses</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="instructors.html">Instructors</a></li>
+            <li class="nav-item"><a class="nav-link" href="schedule.html">Schedule</a></li>
+            <li class="nav-item"><a class="nav-link" href="library.html">Library</a></li>
+            <li class="nav-item"><a class="nav-link" href="gallery.html">Gallery</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          </ul>
+          <div id="nav-auth" class="nav-auth d-flex align-items-center gap-2 mt-2 mt-xl-0">
+            <a class="btn btn-outline-light btn-sm px-3" href="login.html">Log in</a>
+            <a class="btn btn-warning btn-sm px-3" href="signup.html">Sign up</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="page-header">
+      <div class="container-xxl px-3 px-lg-4 py-4 py-lg-5">
+        <div class="row align-items-center g-4">
+          <div class="col-12 col-lg-6">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Instructors</li>
+              </ol>
+            </nav>
+            <span class="eyebrow">Instructors & mentors</span>
+            <h1 class="display-5 fw-bold mb-3">People who review your code</h1>
+            <p class="lead text-secondary mb-0 text-measure">Every EduSphere instructor works in the industry. They teach live classes, check every practice task and meet you one-to-one each week.</p>
+          </div>
+          <div class="col-12 col-lg-6 d-none d-md-block">
+            <img class="page-header-image w-100" src="images/banner-instructors.svg" alt="Three mentors next to a chat bubble with a code review comment" width="960" height="300">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= MENTOR CARDS ========================= -->
+    <section class="section-tight" aria-labelledby="team-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+          <div>
+            <h2 id="team-title" class="h3 fw-bold mb-1">Meet the mentors</h2>
+            <p id="mentor-count" class="text-secondary mb-0" aria-live="polite">Showing all 6 mentors</p>
+          </div>
+          <!-- direction filter (instructors.js) -->
+          <div class="d-flex flex-wrap gap-2" role="group" aria-label="Filter mentors by direction">
+            <button class="chip active" type="button" data-direction="all" aria-pressed="true">All</button>
+            <button class="chip" type="button" data-direction="web" aria-pressed="false">Web development</button>
+            <button class="chip" type="button" data-direction="programming" aria-pressed="false">Programming</button>
+            <button class="chip" type="button" data-direction="data" aria-pressed="false">Data analytics</button>
+            <button class="chip" type="button" data-direction="design" aria-pressed="false">UX / UI design</button>
+          </div>
+        </div>
+
+        <div id="mentor-grid" class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+          <div class="col mentor-card" data-direction="web">
+            <article class="card card-hover h-100">
+              <div class="img-zoom"><img class="card-img-top person-photo" src="images/tutor-1.svg" width="240" height="240" alt="Portrait of Marat Zhaksybek"></div>
+              <div class="card-body d-flex flex-column">
+                <span class="badge text-bg-primary align-self-start mb-2">Web development</span>
+                <h3 class="h5 mb-1">Marat Zhaksybek</h3>
+                <p class="small text-secondary mb-2">HTML, CSS, accessibility · 7 years in fintech</p>
+                <p class="small">Teaches the course this website was built in and still reviews every layout on a phone first.</p>
+                <a class="btn btn-outline-primary btn-sm mt-auto align-self-start btn-icon-spin" href="contact.html?mentor=Marat%20Zhaksybek"><i class="bi bi-chat-dots me-1" aria-hidden="true"></i>Ask Marat</a>
+              </div>
+            </article>
+          </div>
+          <div class="col mentor-card" data-direction="web">
+            <article class="card card-hover h-100">
+              <div class="img-zoom"><img class="card-img-top person-photo" src="images/tutor-4.svg" width="240" height="240" alt="Portrait of Dana Ospanova"></div>
+              <div class="card-body d-flex flex-column">
+                <span class="badge text-bg-primary align-self-start mb-2">Web development</span>
+                <h3 class="h5 mb-1">Dana Ospanova</h3>
+                <p class="small text-secondary mb-2">JavaScript, APIs · front-end lead at a delivery start-up</p>
+                <p class="small">Believes that the best way to learn fetch() is to break it on purpose and read the error.</p>
+                <a class="btn btn-outline-primary btn-sm mt-auto align-self-start btn-icon-spin" href="contact.html?mentor=Dana%20Ospanova"><i class="bi bi-chat-dots me-1" aria-hidden="true"></i>Ask Dana</a>
+              </div>
+            </article>
+          </div>
+          <div class="col mentor-card" data-direction="programming">
+            <article class="card card-hover h-100">
+              <div class="img-zoom"><img class="card-img-top person-photo" src="images/tutor-5.svg" width="240" height="240" alt="Portrait of Yerlan Abenov"></div>
+              <div class="card-body d-flex flex-column">
+                <span class="badge text-bg-dark align-self-start mb-2">Programming</span>
+                <h3 class="h5 mb-1">Yerlan Abenov</h3>
+                <p class="small text-secondary mb-2">Python, automation · back-end developer</p>
+                <p class="small">Starts every course by automating something boring from the students’ own week.</p>
+                <a class="btn btn-outline-primary btn-sm mt-auto align-self-start btn-icon-spin" href="contact.html?mentor=Yerlan%20Abenov"><i class="bi bi-chat-dots me-1" aria-hidden="true"></i>Ask Yerlan</a>
+              </div>
+            </article>
+          </div>
+          <div class="col mentor-card" data-direction="programming">
+            <article class="card card-hover h-100">
+              <div class="img-zoom"><img class="card-img-top person-photo" src="images/tutor-6.svg" width="240" height="240" alt="Portrait of Madina Karimova"></div>
+              <div class="card-body d-flex flex-column">
+                <span class="badge text-bg-dark align-self-start mb-2">Programming</span>
+                <h3 class="h5 mb-1">Madina Karimova</h3>
+                <p class="small text-secondary mb-2">Mobile apps · published 4 apps to the stores</p>
+                <p class="small">Her students ship a real app to a store before the end of the course.</p>
+                <a class="btn btn-outline-primary btn-sm mt-auto align-self-start btn-icon-spin" href="contact.html?mentor=Madina%20Karimova"><i class="bi bi-chat-dots me-1" aria-hidden="true"></i>Ask Madina</a>
+              </div>
+            </article>
+          </div>
+          <div class="col mentor-card" data-direction="data">
+            <article class="card card-hover h-100">
+              <div class="img-zoom"><img class="card-img-top person-photo" src="images/tutor-2.svg" width="240" height="240" alt="Portrait of Aigerim Baitursyn"></div>
+              <div class="card-body d-flex flex-column">
+                <span class="badge text-bg-warning align-self-start mb-2">Data analytics</span>
+                <h3 class="h5 mb-1">Aigerim Baitursyn</h3>
+                <p class="small text-secondary mb-2">SQL, Python, dashboards · data analyst in logistics</p>
+                <p class="small">Turns messy spreadsheets into dashboards a manager can read in thirty seconds.</p>
+                <a class="btn btn-outline-primary btn-sm mt-auto align-self-start btn-icon-spin" href="contact.html?mentor=Aigerim%20Baitursyn"><i class="bi bi-chat-dots me-1" aria-hidden="true"></i>Ask Aigerim</a>
+              </div>
+            </article>
+          </div>
+          <div class="col mentor-card" data-direction="design">
+            <article class="card card-hover h-100">
+              <div class="img-zoom"><img class="card-img-top person-photo" src="images/tutor-3.svg" width="240" height="240" alt="Portrait of Nurlan Serik"></div>
+              <div class="card-body d-flex flex-column">
+                <span class="badge text-bg-primary align-self-start mb-2">UX / UI design</span>
+                <h3 class="h5 mb-1">Nurlan Serik</h3>
+                <p class="small text-secondary mb-2">UX research, design systems · product designer</p>
+                <p class="small">Teaches students to talk to users before they draw the first button.</p>
+                <a class="btn btn-outline-primary btn-sm mt-auto align-self-start btn-icon-spin" href="contact.html?mentor=Nurlan%20Serik"><i class="bi bi-chat-dots me-1" aria-hidden="true"></i>Ask Nurlan</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= CONSULTATION HOURS ====================== -->
+    <section id="hours" class="section-tight" aria-labelledby="hours-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <h2 id="hours-title" class="h3 fw-bold mb-3 reveal">Consultation hours</h2>
+        <div class="table-responsive surface reveal">
+          <table class="table table-hover align-middle mb-0">
+            <caption class="caption-top px-3">Open video consultations — any student can join, no booking needed</caption>
+            <thead>
+              <tr><th scope="col">Mentor</th><th scope="col">Direction</th><th scope="col">Days</th><th scope="col">Time (Astana)</th><th scope="col">Format</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Marat Zhaksybek</td><td>Web development</td><td>Tuesday, Thursday</td><td>18:00–19:30</td><td>Video call</td></tr>
+              <tr><td>Dana Ospanova</td><td>Web development</td><td>Wednesday</td><td>19:00–20:00</td><td>Video call</td></tr>
+              <tr><td>Yerlan Abenov</td><td>Programming</td><td>Monday, Friday</td><td>17:00–18:00</td><td>Video call</td></tr>
+              <tr><td>Aigerim Baitursyn</td><td>Data analytics</td><td>Wednesday, Friday</td><td>19:00–20:00</td><td>Video call</td></tr>
+              <tr><td>Nurlan Serik</td><td>UX / UI design</td><td>Monday, Saturday</td><td>17:00–18:30</td><td>Campus, room 305, or online</td></tr>
+              <tr><td>Mentor team</td><td>All directions</td><td>Monday–Friday</td><td>10:00–18:00</td><td>Written code review in chat</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= BECOME A MENTOR ======================== -->
+    <section class="section" aria-labelledby="apply-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="row g-4 g-lg-5 align-items-start">
+          <div class="col-12 col-lg-5 reveal">
+            <span class="eyebrow">Join the team</span>
+            <h2 id="apply-title" class="display-6 fw-bold">Become a mentor</h2>
+            <p class="text-secondary">We look for working developers and designers who enjoy explaining things. Mentoring takes about five hours a week and is paid per student.</p>
+            <ul class="list-unstyled d-grid gap-2 mb-0">
+              <li><i class="bi bi-check2-circle text-success me-2" aria-hidden="true"></i>At least one year of commercial experience</li>
+              <li><i class="bi bi-check2-circle text-success me-2" aria-hidden="true"></i>A portfolio or a GitHub profile we can look at</li>
+              <li><i class="bi bi-check2-circle text-success me-2" aria-hidden="true"></i>Two free evenings a week</li>
+            </ul>
+          </div>
+
+          <div class="col-12 col-lg-7">
+            <!-- checked by validation.js, sent by instructors.js -->
+            <form id="mentor-form" class="surface p-3 p-sm-4" novalidate>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label for="mentor-name" class="form-label">Full name <span class="required-mark">*</span></label>
+                  <input id="mentor-name" class="form-control" type="text" autocomplete="name">
+                </div>
+                <div class="col-12 col-md-6">
+                  <label for="mentor-email" class="form-label">Email <span class="required-mark">*</span></label>
+                  <input id="mentor-email" class="form-control" type="text" inputmode="email" autocomplete="email" placeholder="name@example.com">
+                </div>
+                <div class="col-12 col-md-6">
+                  <label for="mentor-phone" class="form-label">Phone <span class="required-mark">*</span></label>
+                  <input id="mentor-phone" class="form-control" type="tel" autocomplete="tel" placeholder="+7 701 234 56 78">
+                </div>
+                <div class="col-12 col-md-6">
+                  <label for="mentor-direction" class="form-label">Direction <span class="required-mark">*</span></label>
+                  <select id="mentor-direction" class="form-select">
+                    <option value="">Choose a direction</option>
+                    <option value="web">Web development</option>
+                    <option value="programming">Programming</option>
+                    <option value="data">Data analytics</option>
+                    <option value="design">UX / UI design</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-4">
+                  <label for="mentor-years" class="form-label">Years of experience <span class="required-mark">*</span></label>
+                  <input id="mentor-years" class="form-control" type="text" inputmode="numeric" placeholder="3">
+                </div>
+                <div class="col-12 col-md-8">
+                  <label for="mentor-portfolio" class="form-label">Portfolio or GitHub link</label>
+                  <input id="mentor-portfolio" class="form-control" type="text" inputmode="url" placeholder="https://github.com/your-name">
+                </div>
+                <div class="col-12">
+                  <label for="mentor-bio" class="form-label">Tell us about yourself <span class="required-mark">*</span></label>
+                  <textarea id="mentor-bio" class="form-control" rows="4" aria-describedby="bio-counter" placeholder="What do you work on, and what would you like to teach?"></textarea>
+                  <div id="bio-counter" class="form-text">0 / 500 characters (at least 30)</div>
+                </div>
+                <div class="col-12">
+                  <button class="btn btn-primary btn-lg btn-icon-spin" type="submit"><i class="bi bi-send me-1" aria-hidden="true"></i>Send application</button>
+                </div>
+              </div>
+              <p id="mentor-success" class="alert alert-success mt-3 mb-0" role="status" hidden></p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================ FOOTER ================================ -->
+  <footer class="site-footer">
+    <div class="container-xxl px-3 px-lg-4 pt-5 pb-3">
+      <div class="row g-4">
+        <div class="col-12 col-lg-4">
+          <a class="d-inline-flex align-items-center gap-2 mb-3" href="index.html">
+            <img src="images/logo.svg" alt="" width="36" height="36">
+            <span class="brand-name fs-5">EduSphere</span>
+          </a>
+          <p class="small mb-2">
+            Online courses with live classes, a personal mentor and a real project at
+            the end of every course. Made for students in Kazakhstan who want a portfolio,
+            not just watched videos.
+          </p>
+          <p class="small mb-0"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i>Mangilik El 55/11, Astana</p>
+        </div>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Explore EduSphere">
+          <h2 class="mb-3">Explore</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="instructors.html">Instructors</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="library.html">Learning library</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="about.html">About us</a></li>
+          </ul>
+        </nav>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Your account">
+          <h2 class="mb-3">Your account</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="signup.html">Sign up</a></li>
+            <li><a href="login.html">Log in</a></li>
+            <li><a href="profile.html">My profile</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+          </ul>
+        </nav>
+
+        <div class="col-12 col-md-4 col-lg-4">
+          <h2 class="mb-3">Open lectures</h2>
+          <!-- newsletter form: validated by script.js -->
+          <form id="newsletter-form" novalidate>
+            <label for="newsletter-email" class="small mb-2">A free guest lecture every Friday. Leave your email:</label>
+            <div class="input-group">
+              <input id="newsletter-email" class="form-control" type="text" inputmode="email" autocomplete="email" placeholder="name@example.com">
+              <button class="btn btn-warning" type="submit">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <p class="footer-bottom small text-center pt-3 mt-4 mb-0">
+        &copy; 2026 EduSphere · Front-End final project by <strong>The Ethernet</strong> (SE-2510):
+        Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+      </p>
+    </div>
+  </footer>
+
+  <!-- libraries, then the shared scripts, then the script of this page -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/4.0.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/instructors.js"></script>
+</body>
+</html>

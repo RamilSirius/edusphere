@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img">
+  <title>Portrait of the Python mentor</title>
+  <rect width="240" height="240" fill="#d6f2ee"/>
+  <circle cx="120" cy="120" r="120" fill="#16a394"/>
+  <circle cx="120" cy="100" r="42" fill="#f1c9a0"/>
+  <path d="M78 96 a42 42 0 0 1 84 0 c-6 -20 -22 -30 -42 -30 s-36 10 -42 30 z" fill="#5a3b22"/>
+  <path d="M96 128 q24 22 48 0 q-4 18 -24 20 q-20 -2 -24 -20 z" fill="#5a3b22"/>
+  <path d="M120 150 c-42 0 -72 24 -72 56 v34 h144 v-34 c0 -32 -30 -56 -72 -56 z" fill="#f2a33c"/>
+  <path d="M120 150 l-16 24 l16 14 l16 -14 z" fill="#ffffff"/>
+</svg>

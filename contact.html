@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <!-- =====================================================================
+       EduSphere — online learning platform (Front-End final project)
+       Team    : The Ethernet, group SE-2510
+       Members : Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+       Page    : contact.html — Contact and registration
+       Author  : Azamat Mustafin
+       On this page:
+         - Registration form with JavaScript validation (contact.js)
+         - Copy-to-clipboard buttons (script.js)
+         - FAQ search with highlighting (search.js)
+       ===================================================================== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Send a registration request or a question to EduSphere mentors. Contacts, opening hours and FAQ.">
+  <meta name="author" content="The Ethernet: Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin">
+  <meta name="theme-color" content="#2f2a77">
+  <title>Contact & Registration — EduSphere</title>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+  <script>
+    // Applies the saved light / dark mode BEFORE the page is drawn, so it never flashes.
+    // The "js" class tells the CSS that JavaScript works (used by the reveal animations).
+    (function () {
+      var theme = 'light';
+      try {
+        theme = localStorage.getItem('edusphere-theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (error) { /* storage blocked: light mode */ }
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+  <!-- Bootstrap and Bootstrap Icons from a CDN, then our own styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============================ NAVBAR ================================
+       navbar-expand-xl: links in one row from 1200px, a hamburger below.
+       The light / dark switch stays visible on every screen size.
+       #nav-auth shows "Log in / Sign up"; script.js replaces it with the
+       user's menu when somebody is logged in.
+       ===================================================================== -->
+  <header>
+    <nav class="navbar navbar-expand-xl site-nav py-2" data-bs-theme="dark" aria-label="Main navigation">
+      <div class="container-xxl px-3 px-lg-4">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+          <img src="images/logo.svg" alt="" width="42" height="42">
+          <span class="d-flex flex-column lh-1">
+            <span class="brand-name">EduSphere</span>
+            <small class="text-warning text-uppercase brand-tagline mt-1">Learn · Practise · Grow</small>
+          </span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2 gap-sm-3 ms-auto ms-xl-3 order-xl-last">
+          <!-- light / dark mode switch (script.js) -->
+          <button class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Dark mode">
+            <i class="bi bi-sun" aria-hidden="true"></i>
+            <i class="bi bi-moon-stars" aria-hidden="true"></i>
+            <span class="theme-switch-knob" aria-hidden="true">
+              <i class="bi bi-sun-fill icon-sun"></i><i class="bi bi-moon-stars-fill icon-moon"></i>
+            </span>
+          </button>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                  aria-controls="mainNav" aria-expanded="false" aria-label="Open the menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="courses.html">Courses</a></li>
+            <li class="nav-item"><a class="nav-link" href="instructors.html">Instructors</a></li>
+            <li class="nav-item"><a class="nav-link" href="schedule.html">Schedule</a></li>
+            <li class="nav-item"><a class="nav-link" href="library.html">Library</a></li>
+            <li class="nav-item"><a class="nav-link" href="gallery.html">Gallery</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="contact.html">Contact</a></li>
+          </ul>
+          <div id="nav-auth" class="nav-auth d-flex align-items-center gap-2 mt-2 mt-xl-0">
+            <a class="btn btn-outline-light btn-sm px-3" href="login.html">Log in</a>
+            <a class="btn btn-warning btn-sm px-3" href="signup.html">Sign up</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="page-header">
+      <div class="container-xxl px-3 px-lg-4 py-4 py-lg-5">
+        <div class="row align-items-center g-4">
+          <div class="col-12 col-lg-6">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Contact</li>
+              </ol>
+            </nav>
+            <span class="eyebrow">Contact & registration</span>
+            <h1 class="display-5 fw-bold mb-3">Let’s find your course together</h1>
+            <p class="lead text-secondary mb-0 text-measure">Send a registration request or simply ask a question. A mentor replies within one working day, Monday to Friday, 09:00–18:00.</p>
+          </div>
+          <div class="col-12 col-lg-6 d-none d-md-block">
+            <img class="page-header-image w-100" src="images/banner-contact.svg" alt="Envelope, chat bubbles and a support headset representing contact options" width="960" height="300">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight" aria-labelledby="form-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="row g-4 g-lg-5">
+
+          <!-- ======================= THE FORM ======================= -->
+          <div class="col-12 col-lg-7">
+            <!-- checked by validation.js, sent by contact.js -->
+            <form id="contact-form" class="surface p-3 p-sm-4 p-lg-5" novalidate>
+              <h2 id="form-title" class="h3 fw-bold">Registration request</h2>
+              <p class="small text-secondary mb-4">Fields marked with <span class="required-mark">*</span> are required.</p>
+              <div class="form-alert-slot"></div>
+
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label for="full-name" class="form-label">Full name <span class="required-mark">*</span></label>
+                  <input id="full-name" class="form-control" type="text" autocomplete="name" placeholder="Aisulu Amangeldy">
+                </div>
+                <div class="col-12 col-md-6">
+                  <label for="email" class="form-label">Email <span class="required-mark">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text" aria-hidden="true">@</span>
+                    <input id="email" class="form-control" type="text" inputmode="email" autocomplete="email" placeholder="name@example.com">
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <label for="phone" class="form-label">Phone <span class="required-mark">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text" aria-hidden="true"><i class="bi bi-telephone"></i></span>
+                    <input id="phone" class="form-control" type="tel" autocomplete="tel" placeholder="+7 701 234 56 78" aria-describedby="phone-hint">
+                  </div>
+                  <div id="phone-hint" class="form-text">Kazakhstan number: +7 or 8, then 10 digits.</div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <label for="course" class="form-label">Course <span class="required-mark">*</span></label>
+                  <select id="course" class="form-select">
+                    <option value="">Choose a course</option>
+                    <option value="html-css">HTML &amp; CSS Foundations</option>
+                    <option value="javascript">JavaScript in Practice</option>
+                    <option value="python">Python for Everyone</option>
+                    <option value="sql">Data Analytics with SQL</option>
+                    <option value="ux">UX &amp; UI Design Basics</option>
+                    <option value="mobile">Mobile Development</option>
+                    <option value="question">Just a question</option>
+                  </select>
+                </div>
+
+                <fieldset id="contact-format" class="col-12">
+                  <legend class="form-label fs-6">Preferred study format <span class="required-mark">*</span></legend>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="contact-format" id="cf-evening" value="evening">
+                    <label class="form-check-label" for="cf-evening">Evening</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="contact-format" id="cf-weekend" value="weekend">
+                    <label class="form-check-label" for="cf-weekend">Weekend</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="contact-format" id="cf-intensive" value="intensive">
+                    <label class="form-check-label" for="cf-intensive">Intensive</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="contact-format" id="cf-unsure" value="unsure">
+                    <label class="form-check-label" for="cf-unsure">Not sure yet</label>
+                  </div>
+                </fieldset>
+
+                <div class="col-12">
+                  <label for="message" class="form-label">Your message <span class="required-mark">*</span></label>
+                  <textarea id="message" class="form-control" rows="5" aria-describedby="message-counter" placeholder="Tell us about your level and what you want to achieve…"></textarea>
+                  <div id="message-counter" class="form-text">0 / 1000 characters (at least 20)</div>
+                </div>
+
+                <div class="col-12">
+                  <div class="form-check form-switch mb-2">
+                    <input id="newsletter" class="form-check-input" type="checkbox" role="switch" checked>
+                    <label for="newsletter" class="form-check-label">Send me invitations to free open lectures.</label>
+                  </div>
+                  <div class="form-check">
+                    <input id="agree" class="form-check-input" type="checkbox">
+                    <label for="agree" class="form-check-label">I agree that a mentor may contact me about this request. <span class="required-mark">*</span></label>
+                  </div>
+                </div>
+
+                <div class="col-12 d-grid d-sm-flex gap-2 pt-2">
+                  <button class="btn btn-primary btn-lg btn-icon-spin" type="submit"><i class="bi bi-send me-1" aria-hidden="true"></i>Send request</button>
+                  <button class="btn btn-outline-secondary btn-lg" type="reset">Clear the form</button>
+                </div>
+              </div>
+              <p id="form-success" class="alert alert-success mt-4 mb-0" role="status" hidden></p>
+            </form>
+          </div>
+
+          <!-- ===================== CONTACT DETAILS ===================== -->
+          <div class="col-12 col-lg-5">
+            <div class="surface p-3 p-sm-4 mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h4 fw-bold mb-0">Other ways to reach us</h2>
+                <!-- contact.js shows whether the office is open right now -->
+                <span id="open-status" class="badge rounded-pill text-bg-secondary">…</span>
+              </div>
+              <ul class="list-group">
+                <li class="list-group-item d-flex align-items-center gap-2">
+                  <i class="bi bi-geo-alt fs-5 text-accent" aria-hidden="true"></i>
+                  <div class="flex-grow-1"><strong class="d-block small">Campus</strong><span id="copy-address">Mangilik El 55/11, block C1, room 305, Astana</span></div>
+                  <button class="btn btn-outline-primary btn-sm copy-btn" type="button" data-copy="#copy-address" aria-label="Copy the address"><i class="bi bi-clipboard" aria-hidden="true"></i></button>
+                </li>
+                <li class="list-group-item d-flex align-items-center gap-2">
+                  <i class="bi bi-telephone fs-5 text-accent" aria-hidden="true"></i>
+                  <div class="flex-grow-1"><strong class="d-block small">Phone</strong><a id="copy-phone" href="tel:+77001234567">+7 (700) 123-45-67</a></div>
+                  <button class="btn btn-outline-primary btn-sm copy-btn" type="button" data-copy="#copy-phone" aria-label="Copy the phone number"><i class="bi bi-clipboard" aria-hidden="true"></i></button>
+                </li>
+                <li class="list-group-item d-flex align-items-center gap-2">
+                  <i class="bi bi-envelope fs-5 text-accent" aria-hidden="true"></i>
+                  <div class="flex-grow-1"><strong class="d-block small">Email</strong><a id="copy-email" href="mailto:hello@edusphere.kz">hello@edusphere.kz</a></div>
+                  <button class="btn btn-outline-primary btn-sm copy-btn" type="button" data-copy="#copy-email" aria-label="Copy the email address"><i class="bi bi-clipboard" aria-hidden="true"></i></button>
+                </li>
+                <li class="list-group-item d-flex align-items-center gap-2">
+                  <i class="bi bi-clock fs-5 text-accent" aria-hidden="true"></i>
+                  <div><strong class="d-block small">Working hours</strong>Monday – Friday, 09:00 – 18:00 (UTC+5)</div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="surface p-3 p-sm-4">
+              <h2 class="h5 fw-bold mb-3">What happens next</h2>
+              <ol class="list-unstyled d-grid gap-3 mb-0">
+                <li class="d-flex gap-3"><span class="icon-badge flex-shrink-0"><i class="bi bi-envelope-check" aria-hidden="true"></i></span><span class="small">You get a confirmation email right away.</span></li>
+                <li class="d-flex gap-3"><span class="icon-badge flex-shrink-0"><i class="bi bi-telephone-outbound" aria-hidden="true"></i></span><span class="small">A mentor calls you to agree on a 20-minute interview.</span></li>
+                <li class="d-flex gap-3"><span class="icon-badge flex-shrink-0"><i class="bi bi-calendar2-check" aria-hidden="true"></i></span><span class="small">After the interview your place is reserved for 48 hours.</span></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= FAQ WITH SEARCH ========================= -->
+    <section class="section" aria-labelledby="faq-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-3">
+          <div>
+            <span class="eyebrow">FAQ</span>
+            <h2 id="faq-title" class="h3 fw-bold mb-1">Frequent questions</h2>
+            <p class="text-secondary mb-0">Type a word: every match is highlighted and the answers open by themselves.</p>
+          </div>
+          <div class="search-box flex-shrink-0">
+            <label for="faq-search" class="visually-hidden">Search the questions</label>
+            <div class="input-group">
+              <span class="input-group-text" aria-hidden="true"><i class="bi bi-search"></i></span>
+              <input id="faq-search" class="form-control" type="search" placeholder="payment, mentor, certificate…" autocomplete="off">
+            </div>
+          </div>
+        </div>
+        <p id="faq-result" class="small fw-semibold text-accent mb-3" aria-live="polite"></p>
+        <div class="accordion" id="faq">
+            <div class="accordion-item faq-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse" data-bs-target="#faq-1" aria-expanded="false" aria-controls="faq-1">Can I change the study format later?</button>
+              </h3>
+              <div id="faq-1" class="accordion-collapse collapse" data-bs-parent="#faq">
+                <div class="accordion-body faq-answer">Yes. You can move between the evening, weekend and intensive format once per module. Write to your mentor at least a week before the next module starts and we move you to a group with free places.</div>
+              </div>
+            </div>
+            <div class="accordion-item faq-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse" data-bs-target="#faq-2" aria-expanded="false" aria-controls="faq-2">Is there a free trial class?</button>
+              </h3>
+              <div id="faq-2" class="accordion-collapse collapse" data-bs-parent="#faq">
+                <div class="accordion-body faq-answer">The first live class of every course is free. You do not need to pay or enter card details: pick a slot on the schedule page and join the class like any other student.</div>
+              </div>
+            </div>
+            <div class="accordion-item faq-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse" data-bs-target="#faq-3" aria-expanded="false" aria-controls="faq-3">How do payments work?</button>
+              </h3>
+              <div id="faq-3" class="accordion-collapse collapse" data-bs-parent="#faq">
+                <div class="accordion-body faq-answer">Courses are paid month by month. The first payment is made after the interview with a mentor, and students of Astana IT University get a 20% discount with a valid student card.</div>
+              </div>
+            </div>
+            <div class="accordion-item faq-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse" data-bs-target="#faq-4" aria-expanded="false" aria-controls="faq-4">What if I miss a live class?</button>
+              </h3>
+              <div id="faq-4" class="accordion-collapse collapse" data-bs-parent="#faq">
+                <div class="accordion-body faq-answer">Every live class is recorded and the recording appears in the student portal within two hours. If you miss more than four classes in a module, you can repeat that module for free with the next cohort.</div>
+              </div>
+            </div>
+            <div class="accordion-item faq-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse" data-bs-target="#faq-5" aria-expanded="false" aria-controls="faq-5">Who checks my homework?</button>
+              </h3>
+              <div id="faq-5" class="accordion-collapse collapse" data-bs-parent="#faq">
+                <div class="accordion-body faq-answer">Your personal mentor reviews every practice task line by line and leaves written comments in the code. Feedback usually arrives within 24 hours, and the mentor also holds a short call with you once a week.</div>
+              </div>
+            </div>
+            <div class="accordion-item faq-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse" data-bs-target="#faq-6" aria-expanded="false" aria-controls="faq-6">Do I get a certificate?</button>
+              </h3>
+              <div id="faq-6" class="accordion-collapse collapse" data-bs-parent="#faq">
+                <div class="accordion-body faq-answer">Yes. After you defend the final project in front of the group, you receive a certificate with a public verification link that an employer can open to check it.</div>
+              </div>
+            </div>
+            <div class="accordion-item faq-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse" data-bs-target="#faq-7" aria-expanded="false" aria-controls="faq-7">Do I need a powerful computer?</button>
+              </h3>
+              <div id="faq-7" class="accordion-collapse collapse" data-bs-parent="#faq">
+                <div class="accordion-body faq-answer">No. Any laptop that can run a modern browser is enough for the web and design courses. For the mobile course we recommend at least 8 GB of memory, because the phone emulator needs it.</div>
+              </div>
+            </div>
+            <div class="accordion-item faq-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse" data-bs-target="#faq-8" aria-expanded="false" aria-controls="faq-8">Is my account stored on a server?</button>
+              </h3>
+              <div id="faq-8" class="accordion-collapse collapse" data-bs-parent="#faq">
+                <div class="accordion-body faq-answer">Not on this demo website: your account, saved courses and reading list live only in your browser (localStorage). Clearing the browser data removes them.</div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================ FOOTER ================================ -->
+  <footer class="site-footer">
+    <div class="container-xxl px-3 px-lg-4 pt-5 pb-3">
+      <div class="row g-4">
+        <div class="col-12 col-lg-4">
+          <a class="d-inline-flex align-items-center gap-2 mb-3" href="index.html">
+            <img src="images/logo.svg" alt="" width="36" height="36">
+            <span class="brand-name fs-5">EduSphere</span>
+          </a>
+          <p class="small mb-2">
+            Online courses with live classes, a personal mentor and a real project at
+            the end of every course. Made for students in Kazakhstan who want a portfolio,
+            not just watched videos.
+          </p>
+          <p class="small mb-0"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i>Mangilik El 55/11, Astana</p>
+        </div>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Explore EduSphere">
+          <h2 class="mb-3">Explore</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="instructors.html">Instructors</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="library.html">Learning library</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="about.html">About us</a></li>
+          </ul>
+        </nav>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Your account">
+          <h2 class="mb-3">Your account</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="signup.html">Sign up</a></li>
+            <li><a href="login.html">Log in</a></li>
+            <li><a href="profile.html">My profile</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+          </ul>
+        </nav>
+
+        <div class="col-12 col-md-4 col-lg-4">
+          <h2 class="mb-3">Open lectures</h2>
+          <!-- newsletter form: validated by script.js -->
+          <form id="newsletter-form" novalidate>
+            <label for="newsletter-email" class="small mb-2">A free guest lecture every Friday. Leave your email:</label>
+            <div class="input-group">
+              <input id="newsletter-email" class="form-control" type="text" inputmode="email" autocomplete="email" placeholder="name@example.com">
+              <button class="btn btn-warning" type="submit">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <p class="footer-bottom small text-center pt-3 mt-4 mb-0">
+        &copy; 2026 EduSphere · Front-End final project by <strong>The Ethernet</strong> (SE-2510):
+        Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+      </p>
+    </div>
+  </footer>
+
+  <!-- libraries, then the shared scripts, then the script of this page -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/4.0.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/contact.js"></script>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <!-- =====================================================================
+       EduSphere — online learning platform (Front-End final project)
+       Team    : The Ethernet, group SE-2510
+       Members : Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+       Page    : gallery.html — Gallery
+       Author  : Maxim Batyushkin
+       On this page:
+         - Category filter saved in localStorage (gallery.js)
+         - Lazy image loading with a shimmer placeholder
+         - Full-size viewer in a Bootstrap modal with previous / next
+       ===================================================================== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Photos from EduSphere classes, workshops and events, with category filters and a full-size viewer.">
+  <meta name="author" content="The Ethernet: Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin">
+  <meta name="theme-color" content="#2f2a77">
+  <title>Campus Gallery — EduSphere</title>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+  <script>
+    // Applies the saved light / dark mode BEFORE the page is drawn, so it never flashes.
+    // The "js" class tells the CSS that JavaScript works (used by the reveal animations).
+    (function () {
+      var theme = 'light';
+      try {
+        theme = localStorage.getItem('edusphere-theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (error) { /* storage blocked: light mode */ }
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+  <!-- Bootstrap and Bootstrap Icons from a CDN, then our own styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============================ NAVBAR ================================
+       navbar-expand-xl: links in one row from 1200px, a hamburger below.
+       The light / dark switch stays visible on every screen size.
+       #nav-auth shows "Log in / Sign up"; script.js replaces it with the
+       user's menu when somebody is logged in.
+       ===================================================================== -->
+  <header>
+    <nav class="navbar navbar-expand-xl site-nav py-2" data-bs-theme="dark" aria-label="Main navigation">
+      <div class="container-xxl px-3 px-lg-4">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+          <img src="images/logo.svg" alt="" width="42" height="42">
+          <span class="d-flex flex-column lh-1">
+            <span class="brand-name">EduSphere</span>
+            <small class="text-warning text-uppercase brand-tagline mt-1">Learn · Practise · Grow</small>
+          </span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2 gap-sm-3 ms-auto ms-xl-3 order-xl-last">
+          <!-- light / dark mode switch (script.js) -->
+          <button class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Dark mode">
+            <i class="bi bi-sun" aria-hidden="true"></i>
+            <i class="bi bi-moon-stars" aria-hidden="true"></i>
+            <span class="theme-switch-knob" aria-hidden="true">
+              <i class="bi bi-sun-fill icon-sun"></i><i class="bi bi-moon-stars-fill icon-moon"></i>
+            </span>
+          </button>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                  aria-controls="mainNav" aria-expanded="false" aria-label="Open the menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="courses.html">Courses</a></li>
+            <li class="nav-item"><a class="nav-link" href="instructors.html">Instructors</a></li>
+            <li class="nav-item"><a class="nav-link" href="schedule.html">Schedule</a></li>
+            <li class="nav-item"><a class="nav-link" href="library.html">Library</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="gallery.html">Gallery</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          </ul>
+          <div id="nav-auth" class="nav-auth d-flex align-items-center gap-2 mt-2 mt-xl-0">
+            <a class="btn btn-outline-light btn-sm px-3" href="login.html">Log in</a>
+            <a class="btn btn-warning btn-sm px-3" href="signup.html">Sign up</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="page-header">
+      <div class="container-xxl px-3 px-lg-4 py-4 py-lg-5">
+        <div class="row align-items-center g-4">
+          <div class="col-12 col-lg-6">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Gallery</li>
+              </ol>
+            </nav>
+            <span class="eyebrow">Campus life</span>
+            <h1 class="display-5 fw-bold mb-3">Gallery</h1>
+            <p class="lead text-secondary mb-0 text-measure">Classes, workshops, hackathons and graduation days — a semester at EduSphere in pictures. Filter the photos by category and open any of them full size.</p>
+          </div>
+          <div class="col-12 col-lg-6 d-none d-md-block">
+            <img class="page-header-image w-100" src="images/banner-gallery.svg" alt="Camera surrounded by photo frames from campus life" width="960" height="300">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================== HIGHLIGHTS ========================== -->
+    <section class="section-tight" aria-labelledby="highlights-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <h2 id="highlights-title" class="h3 fw-bold mb-3">Highlights of the semester</h2>
+        <!-- Bootstrap carousel: arrows, dots, swipe on phones -->
+        <div id="gallery-carousel" class="carousel slide surface p-2" data-bs-ride="carousel" data-bs-interval="6000">
+          <div class="carousel-indicators">
+            <button type="button" data-bs-target="#gallery-carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1: Live classes twice a week"></button>
+            <button type="button" data-bs-target="#gallery-carousel" data-bs-slide-to="1" aria-label="Slide 2: Night hackathon"></button>
+            <button type="button" data-bs-target="#gallery-carousel" data-bs-slide-to="2" aria-label="Slide 3: Demo day"></button>
+            <button type="button" data-bs-target="#gallery-carousel" data-bs-slide-to="3" aria-label="Slide 4: Graduation 2025"></button>
+          </div>
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img class="d-block w-100" src="images/gallery-lecture.svg" alt="Live classes twice a week" width="400" height="300">
+              <div class="carousel-caption d-none d-md-block rounded-3 px-3 py-2">
+                <h3 class="h5 text-white mb-1">Live classes twice a week</h3>
+                <p class="small mb-0">Every class is recorded, so you can watch it again before the practice task.</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img class="d-block w-100" src="images/gallery-hackathon.svg" alt="Night hackathon" width="400" height="300" loading="lazy">
+              <div class="carousel-caption d-none d-md-block rounded-3 px-3 py-2">
+                <h3 class="h5 text-white mb-1">Night hackathon</h3>
+                <p class="small mb-0">Twenty-four hours, five teams and one pizza order that went very wrong.</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img class="d-block w-100" src="images/gallery-demoday.svg" alt="Demo day" width="400" height="300" loading="lazy">
+              <div class="carousel-caption d-none d-md-block rounded-3 px-3 py-2">
+                <h3 class="h5 text-white mb-1">Demo day</h3>
+                <p class="small mb-0">Students defend their final projects in front of mentors and employers.</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img class="d-block w-100" src="images/gallery-graduation.svg" alt="Graduation 2025" width="400" height="300" loading="lazy">
+              <div class="carousel-caption d-none d-md-block rounded-3 px-3 py-2">
+                <h3 class="h5 text-white mb-1">Graduation 2025</h3>
+                <p class="small mb-0">Ninety-two graduates received verifiable certificates this year.</p>
+              </div>
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#gallery-carousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#gallery-carousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================== PHOTO WALL ========================== -->
+    <section class="section-tight" aria-labelledby="wall-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+          <div>
+            <h2 id="wall-title" class="h3 fw-bold mb-1">Photo wall</h2>
+            <p class="text-secondary mb-0">Photos load only when you scroll to them. <span id="lazy-status" class="badge text-bg-warning ms-1" aria-live="polite">Loaded 0 of 12</span></p>
+          </div>
+          <!-- category filter (gallery.js), saved in localStorage -->
+          <div class="d-flex flex-wrap gap-2" role="group" aria-label="Filter photos by category">
+            <button class="chip active" type="button" data-filter="all" aria-pressed="true">All <span class="opacity-75" data-count="all"></span></button>
+            <button class="chip" type="button" data-filter="classes" aria-pressed="false">Classes <span class="opacity-75" data-count="classes"></span></button>
+            <button class="chip" type="button" data-filter="events" aria-pressed="false">Events <span class="opacity-75" data-count="events"></span></button>
+            <button class="chip" type="button" data-filter="campus" aria-pressed="false">Campus <span class="opacity-75" data-count="campus"></span></button>
+          </div>
+        </div>
+
+        <div id="photo-wall" class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xxl-4 g-4">
+          <figure class="col gallery-col mb-0" data-category="events">
+            <button class="gallery-item w-100 border-0 bg-transparent p-0 text-start" type="button" data-index="0" aria-label="Open the photo “Open day”">
+              <span class="lazy-frame d-block">
+                <img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="images/gallery-openday.svg" alt="Open day welcome desk where new students sign up for a cohort" width="400" height="300">
+                <span class="zoom-hint" aria-hidden="true"><i class="bi bi-arrows-fullscreen"></i></span>
+              </span>
+            </button>
+            <figcaption class="d-flex justify-content-between align-items-center small mt-2"><span class="fw-semibold">Open day</span><span class="badge bg-body-tertiary text-body border text-capitalize">events</span></figcaption>
+          </figure>
+          <figure class="col gallery-col mb-0" data-category="classes">
+            <button class="gallery-item w-100 border-0 bg-transparent p-0 text-start" type="button" data-index="1" aria-label="Open the photo “Live class”">
+              <span class="lazy-frame d-block">
+                <img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="images/gallery-lecture.svg" alt="Instructor presenting a live class in front of a projector screen" width="400" height="300">
+                <span class="zoom-hint" aria-hidden="true"><i class="bi bi-arrows-fullscreen"></i></span>
+              </span>
+            </button>
+            <figcaption class="d-flex justify-content-between align-items-center small mt-2"><span class="fw-semibold">Live class</span><span class="badge bg-body-tertiary text-body border text-capitalize">classes</span></figcaption>
+          </figure>
+          <figure class="col gallery-col mb-0" data-category="classes">
+            <button class="gallery-item w-100 border-0 bg-transparent p-0 text-start" type="button" data-index="2" aria-label="Open the photo “Code review”">
+              <span class="lazy-frame d-block">
+                <img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="images/gallery-codereview.svg" alt="Mentor reviewing a student&#39;s code with inline comments on screen" width="400" height="300">
+                <span class="zoom-hint" aria-hidden="true"><i class="bi bi-arrows-fullscreen"></i></span>
+              </span>
+            </button>
+            <figcaption class="d-flex justify-content-between align-items-center small mt-2"><span class="fw-semibold">Code review</span><span class="badge bg-body-tertiary text-body border text-capitalize">classes</span></figcaption>
+          </figure>
+          <figure class="col gallery-col mb-0" data-category="classes">
+            <button class="gallery-item w-100 border-0 bg-transparent p-0 text-start" type="button" data-index="3" aria-label="Open the photo “Flexbox workshop”">
+              <span class="lazy-frame d-block">
+                <img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="images/gallery-whiteboard.svg" alt="Workshop at a whiteboard explaining the flexbox and grid box model" width="400" height="300">
+                <span class="zoom-hint" aria-hidden="true"><i class="bi bi-arrows-fullscreen"></i></span>
+              </span>
+            </button>
+            <figcaption class="d-flex justify-content-between align-items-center small mt-2"><span class="fw-semibold">Flexbox workshop</span><span class="badge bg-body-tertiary text-body border text-capitalize">classes</span></figcaption>
+          </figure>
+          <figure class="col gallery-col mb-0" data-category="classes">
+            <button class="gallery-item w-100 border-0 bg-transparent p-0 text-start" type="button" data-index="4" aria-label="Open the photo “One-to-one mentoring”">
+              <span class="lazy-frame d-block">
+                <img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="images/gallery-mentoring.svg" alt="One-to-one mentoring call between a mentor and a student" width="400" height="300">
+                <span class="zoom-hint" aria-hidden="true"><i class="bi bi-arrows-fullscreen"></i></span>
+              </span>
+            </button>
+            <figcaption class="d-flex justify-content-between align-items-center small mt-2"><span class="fw-semibold">One-to-one mentoring</span><span class="badge bg-body-tertiary text-body border text-capitalize">classes</span></figcaption>
+          </figure>
+          <figure class="col gallery-col mb-0" data-category="classes">
+            <button class="gallery-item w-100 border-0 bg-transparent p-0 text-start" type="button" data-index="5" aria-label="Open the photo “Team project”">
+              <span class="lazy-frame d-block">
+                <img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="images/gallery-teamwork.svg" alt="Team of three students planning a group project around a table" width="400" height="300">
+                <span class="zoom-hint" aria-hidden="true"><i class="bi bi-arrows-fullscreen"></i></span>
+              </span>
+            </button>
+            <figcaption class="d-flex justify-content-between align-items-center small mt-2"><span class="fw-semibold">Team project</span><span class="badge bg-body-tertiary text-body border text-capitalize">classes</span></figcaption>
+          </figure>
+          <figure class="col gallery-col mb-0" data-category="events">
+            <button class="gallery-item w-100 border-0 bg-transparent p-0 text-start" type="button" data-index="6" aria-label="Open the photo “Night hackathon”">
+              <span class="lazy-frame d-block">
+                <img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="images/gallery-hackathon.svg" alt="Students working late at a night hackathon with laptops and coffee" width="400" height="300">
+                <span class="zoom-hint" aria-hidden="true"><i class="bi bi-arrows-fullscreen"></i></span>
+              </span>
+            </button>
+            <figcaption class="d-flex justify-content-between align-items-center small mt-2"><span class="fw-semibold">Night hackathon</span><span class="badge bg-body-tertiary text-body border text-capitalize">events</span></figcaption>
+          </figure>
+          <figure class="col gallery-col mb-0" data-category="campus">
+            <button class="gallery-item w-100 border-0 bg-transparent p-0 text-start" type="button" data-index="7" aria-label="Open the photo “Study lounge”">
+              <span class="lazy-frame d-block">
+                <img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="images/gallery-lounge.svg" alt="Student study lounge with a sofa, laptop and plants" width="400" height="300">
+                <span class="zoom-hint" aria-hidden="true"><i class="bi bi-arrows-fullscreen"></i></span>
+              </span>
+            </button>
+            <figcaption class="d-flex justify-content-between align-items-center small mt-2"><span class="fw-semibold">Study lounge</span><span class="badge bg-body-tertiary text-body border text-capitalize">campus</span></figcaption>
+          </figure>
+          <figure class="col gallery-col mb-0" data-category="campus">
+            <button class="gallery-item w-100 border-0 bg-transparent p-0 text-start" type="button" data-index="8" aria-label="Open the photo “Campus library”">
+              <span class="lazy-frame d-block">
+                <img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="images/gallery-library.svg" alt="Library corner with bookshelves and a student reading" width="400" height="300">
+                <span class="zoom-hint" aria-hidden="true"><i class="bi bi-arrows-fullscreen"></i></span>
+              </span>
+            </button>
+            <figcaption class="d-flex justify-content-between align-items-center small mt-2"><span class="fw-semibold">Campus library</span><span class="badge bg-body-tertiary text-body border text-capitalize">campus</span></figcaption>
+          </figure>
+          <figure class="col gallery-col mb-0" data-category="events">
+            <button class="gallery-item w-100 border-0 bg-transparent p-0 text-start" type="button" data-index="9" aria-label="Open the photo “Open lecture”">
+              <span class="lazy-frame d-block">
+                <img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="images/gallery-workshop.svg" alt="Open lecture in the campus auditorium with a guest speaker" width="400" height="300">
+                <span class="zoom-hint" aria-hidden="true"><i class="bi bi-arrows-fullscreen"></i></span>
+              </span>
+            </button>
+            <figcaption class="d-flex justify-content-between align-items-center small mt-2"><span class="fw-semibold">Open lecture</span><span class="badge bg-body-tertiary text-body border text-capitalize">events</span></figcaption>
+          </figure>
+          <figure class="col gallery-col mb-0" data-category="events">
+            <button class="gallery-item w-100 border-0 bg-transparent p-0 text-start" type="button" data-index="10" aria-label="Open the photo “Demo day”">
+              <span class="lazy-frame d-block">
+                <img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="images/gallery-demoday.svg" alt="Students presenting their final projects on demo day" width="400" height="300">
+                <span class="zoom-hint" aria-hidden="true"><i class="bi bi-arrows-fullscreen"></i></span>
+              </span>
+            </button>
+            <figcaption class="d-flex justify-content-between align-items-center small mt-2"><span class="fw-semibold">Demo day</span><span class="badge bg-body-tertiary text-body border text-capitalize">events</span></figcaption>
+          </figure>
+          <figure class="col gallery-col mb-0" data-category="events">
+            <button class="gallery-item w-100 border-0 bg-transparent p-0 text-start" type="button" data-index="11" aria-label="Open the photo “Graduation”">
+              <span class="lazy-frame d-block">
+                <img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="images/gallery-graduation.svg" alt="Graduates throwing their caps at the graduation ceremony" width="400" height="300">
+                <span class="zoom-hint" aria-hidden="true"><i class="bi bi-arrows-fullscreen"></i></span>
+              </span>
+            </button>
+            <figcaption class="d-flex justify-content-between align-items-center small mt-2"><span class="fw-semibold">Graduation</span><span class="badge bg-body-tertiary text-body border text-capitalize">events</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- full-size viewer (Bootstrap modal); gallery.js fills it -->
+    <div class="modal fade" id="photo-modal" tabindex="-1" aria-labelledby="photo-modal-title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 id="photo-modal-title" class="modal-title h5">Photo</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <img id="photo-modal-image" class="w-100 rounded-3" src="images/gallery-lecture.svg" alt="" width="400" height="300">
+            <p id="photo-modal-caption" class="text-secondary small mt-3 mb-0"></p>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button id="photo-prev" class="btn btn-outline-primary" type="button"><i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Previous</button>
+            <span id="photo-position" class="small text-secondary"></span>
+            <button id="photo-next" class="btn btn-outline-primary" type="button">Next<i class="bi bi-arrow-right ms-1" aria-hidden="true"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============================ FOOTER ================================ -->
+  <footer class="site-footer">
+    <div class="container-xxl px-3 px-lg-4 pt-5 pb-3">
+      <div class="row g-4">
+        <div class="col-12 col-lg-4">
+          <a class="d-inline-flex align-items-center gap-2 mb-3" href="index.html">
+            <img src="images/logo.svg" alt="" width="36" height="36">
+            <span class="brand-name fs-5">EduSphere</span>
+          </a>
+          <p class="small mb-2">
+            Online courses with live classes, a personal mentor and a real project at
+            the end of every course. Made for students in Kazakhstan who want a portfolio,
+            not just watched videos.
+          </p>
+          <p class="small mb-0"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i>Mangilik El 55/11, Astana</p>
+        </div>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Explore EduSphere">
+          <h2 class="mb-3">Explore</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="instructors.html">Instructors</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="library.html">Learning library</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="about.html">About us</a></li>
+          </ul>
+        </nav>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Your account">
+          <h2 class="mb-3">Your account</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="signup.html">Sign up</a></li>
+            <li><a href="login.html">Log in</a></li>
+            <li><a href="profile.html">My profile</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+          </ul>
+        </nav>
+
+        <div class="col-12 col-md-4 col-lg-4">
+          <h2 class="mb-3">Open lectures</h2>
+          <!-- newsletter form: validated by script.js -->
+          <form id="newsletter-form" novalidate>
+            <label for="newsletter-email" class="small mb-2">A free guest lecture every Friday. Leave your email:</label>
+            <div class="input-group">
+              <input id="newsletter-email" class="form-control" type="text" inputmode="email" autocomplete="email" placeholder="name@example.com">
+              <button class="btn btn-warning" type="submit">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <p class="footer-bottom small text-center pt-3 mt-4 mb-0">
+        &copy; 2026 EduSphere · Front-End final project by <strong>The Ethernet</strong> (SE-2510):
+        Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+      </p>
+    </div>
+  </footer>
+
+  <!-- libraries, then the shared scripts, then the script of this page -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/4.0.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/gallery.js"></script>
+</body>
+</html>

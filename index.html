@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <!-- =====================================================================
+       EduSphere — online learning platform (Front-End final project)
+       Team    : The Ethernet, group SE-2510
+       Members : Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+       Page    : index.html — Home page
+       Author  : Ramil Zhunussov
+       On this page:
+         - Personal greeting for a logged-in student (storage.js)
+         - Animated counters and reveal-on-scroll effects (script.js)
+         - Next cohort card: reserve a place (home.js)
+         - Popular courses built from js/data.js
+       ===================================================================== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EduSphere is an online learning platform with live classes, personal mentors and project-based courses in web development, programming, data and design.">
+  <meta name="author" content="The Ethernet: Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin">
+  <meta name="theme-color" content="#2f2a77">
+  <title>EduSphere — Learn Online, Build Real Projects</title>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+  <script>
+    // Applies the saved light / dark mode BEFORE the page is drawn, so it never flashes.
+    // The "js" class tells the CSS that JavaScript works (used by the reveal animations).
+    (function () {
+      var theme = 'light';
+      try {
+        theme = localStorage.getItem('edusphere-theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (error) { /* storage blocked: light mode */ }
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+  <!-- Bootstrap and Bootstrap Icons from a CDN, then our own styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============================ NAVBAR ================================
+       navbar-expand-xl: links in one row from 1200px, a hamburger below.
+       The light / dark switch stays visible on every screen size.
+       #nav-auth shows "Log in / Sign up"; script.js replaces it with the
+       user's menu when somebody is logged in.
+       ===================================================================== -->
+  <header>
+    <nav class="navbar navbar-expand-xl site-nav py-2" data-bs-theme="dark" aria-label="Main navigation">
+      <div class="container-xxl px-3 px-lg-4">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+          <img src="images/logo.svg" alt="" width="42" height="42">
+          <span class="d-flex flex-column lh-1">
+            <span class="brand-name">EduSphere</span>
+            <small class="text-warning text-uppercase brand-tagline mt-1">Learn · Practise · Grow</small>
+          </span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2 gap-sm-3 ms-auto ms-xl-3 order-xl-last">
+          <!-- light / dark mode switch (script.js) -->
+          <button class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Dark mode">
+            <i class="bi bi-sun" aria-hidden="true"></i>
+            <i class="bi bi-moon-stars" aria-hidden="true"></i>
+            <span class="theme-switch-knob" aria-hidden="true">
+              <i class="bi bi-sun-fill icon-sun"></i><i class="bi bi-moon-stars-fill icon-moon"></i>
+            </span>
+          </button>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                  aria-controls="mainNav" aria-expanded="false" aria-label="Open the menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="courses.html">Courses</a></li>
+            <li class="nav-item"><a class="nav-link" href="instructors.html">Instructors</a></li>
+            <li class="nav-item"><a class="nav-link" href="schedule.html">Schedule</a></li>
+            <li class="nav-item"><a class="nav-link" href="library.html">Library</a></li>
+            <li class="nav-item"><a class="nav-link" href="gallery.html">Gallery</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          </ul>
+          <div id="nav-auth" class="nav-auth d-flex align-items-center gap-2 mt-2 mt-xl-0">
+            <a class="btn btn-outline-light btn-sm px-3" href="login.html">Log in</a>
+            <a class="btn btn-warning btn-sm px-3" href="signup.html">Sign up</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- ============================== HERO ============================== -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container-xxl px-3 px-lg-4 py-5">
+        <div class="row align-items-center g-4 g-lg-5">
+          <div class="col-12 col-lg-6">
+            <span class="eyebrow">Online school · Astana</span>
+            <h1 id="hero-title" class="display-5 fw-bold mb-3">Study online, finish with a portfolio</h1>
+            <!-- home.js writes a personal greeting here for a logged-in student -->
+            <p id="greeting" class="h5 font-serif text-accent mb-3" aria-live="polite">Good day! Welcome to EduSphere.</p>
+            <p class="lead text-secondary mb-4">
+              EduSphere is for students who want more than video lectures. Every course
+              mixes <mark>live classes</mark>, weekly practice tasks and a personal mentor
+              who reviews your code line by line.
+            </p>
+
+            <div id="hero-actions" class="d-flex flex-wrap gap-2 mb-4">
+              <a class="btn btn-primary btn-lg btn-arrow" href="courses.html">Browse courses <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i></a>
+              <a class="btn btn-outline-primary btn-lg" href="signup.html">Create a free account</a>
+            </div>
+
+            <!-- the numbers count up when they appear on screen (script.js) -->
+            <ul class="row row-cols-3 g-2 list-unstyled mb-0 text-center">
+              <li class="col">
+                <div class="surface p-2 p-sm-3 h-100">
+                  <strong class="d-block fs-3 font-serif text-accent counter" data-count="6">6</strong>
+                  <span class="small text-secondary">project-based courses</span>
+                </div>
+              </li>
+              <li class="col">
+                <div class="surface p-2 p-sm-3 h-100">
+                  <strong class="d-block fs-3 font-serif text-accent counter" data-count="12">12</strong>
+                  <span class="small text-secondary">mentors and instructors</span>
+                </div>
+              </li>
+              <li class="col">
+                <div class="surface p-2 p-sm-3 h-100">
+                  <strong class="d-block fs-3 font-serif text-accent counter" data-count="1800" data-suffix="+">1,800+</strong>
+                  <span class="small text-secondary">students since 2023</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-12 col-md-9 col-lg-6 mx-auto">
+            <img class="img-fluid float" src="images/hero-learning.svg" width="640" height="440"
+                 alt="Student studying at a laptop surrounded by floating course cards">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= WHY EDUSPHERE ========================= -->
+    <section class="section" aria-labelledby="why-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="text-center text-measure mx-auto mb-5 reveal">
+          <span class="eyebrow">Why EduSphere</span>
+          <h2 id="why-title" class="section-title display-6">Learning that ends with real work</h2>
+          <p class="text-secondary mb-0">Three things make the difference between watching a tutorial and actually learning a skill.</p>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-12 col-md-6 col-lg-4 reveal">
+            <article class="card card-hover h-100 text-center">
+              <div class="card-body d-flex flex-column p-4">
+                <div class="feature-icon mb-3"><img src="images/icon-live.svg" alt="" width="56" height="56"></div>
+                <h3 class="h5">Live classes twice a week</h3>
+                <p class="text-secondary">Lessons run in real time, so you can stop the instructor and ask. Every class is recorded for revision.</p>
+                <a class="btn btn-outline-primary btn-sm mt-auto align-self-center" href="schedule.html">See the timetable</a>
+              </div>
+            </article>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4 reveal">
+            <article class="card card-hover h-100 text-center">
+              <div class="card-body d-flex flex-column p-4">
+                <div class="feature-icon mb-3"><img src="images/icon-mentor.svg" alt="" width="56" height="56"></div>
+                <h3 class="h5">A mentor for every student</h3>
+                <p class="text-secondary">Your mentor reviews homework line by line and holds a one-to-one call every week to plan your next step.</p>
+                <a class="btn btn-outline-primary btn-sm mt-auto align-self-center" href="instructors.html">Meet the mentors</a>
+              </div>
+            </article>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4 mx-md-auto reveal">
+            <article class="card card-hover h-100 text-center">
+              <div class="card-body d-flex flex-column p-4">
+                <div class="feature-icon mb-3"><img src="images/icon-certificate.svg" alt="" width="56" height="56"></div>
+                <h3 class="h5">A certificate you can check</h3>
+                <p class="text-secondary">Defend a final project in front of the group and get a certificate with a public verification link.</p>
+                <a class="btn btn-outline-primary btn-sm mt-auto align-self-center" href="courses.html">Choose a course</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== POPULAR COURSES ======================== -->
+    <section class="section bg-tint" aria-labelledby="popular-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4 reveal">
+          <div>
+            <span class="eyebrow">Most popular this semester</span>
+            <h2 id="popular-title" class="section-title display-6 mb-0">Start with these courses</h2>
+          </div>
+          <a class="btn btn-primary btn-arrow" href="courses.html">All courses <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i></a>
+        </div>
+        <!-- home.js builds the three cards from js/data.js -->
+        <div id="popular-courses" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"></div>
+      </div>
+    </section>
+
+    <!-- ===================== HOW IT WORKS + COHORT ===================== -->
+    <section class="section" aria-labelledby="how-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="row g-4 g-lg-5 align-items-start">
+          <div class="col-12 col-lg-7 reveal">
+            <span class="eyebrow">How learning works</span>
+            <h2 id="how-title" class="section-title display-6 mb-4">Five steps from sign-up to certificate</h2>
+            <ol class="list-unstyled d-grid gap-3 mb-0">
+              <li class="d-flex gap-3">
+                <span class="icon-badge flex-shrink-0"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
+                <div><h3 class="h6 fw-bold mb-1 font-serif">Create a free account</h3><p class="text-secondary mb-0">Sign up in a minute — your saved courses and reading list stay in your profile.</p></div>
+              </li>
+              <li class="d-flex gap-3">
+                <span class="icon-badge flex-shrink-0"><i class="bi bi-compass" aria-hidden="true"></i></span>
+                <div><h3 class="h6 fw-bold mb-1 font-serif">Choose a course and a format</h3><p class="text-secondary mb-0">Evening, weekend or intensive — switch once per module if your week changes.</p></div>
+              </li>
+              <li class="d-flex gap-3">
+                <span class="icon-badge flex-shrink-0"><i class="bi bi-camera-video" aria-hidden="true"></i></span>
+                <div><h3 class="h6 fw-bold mb-1 font-serif">Join live classes</h3><p class="text-secondary mb-0">Ninety minutes, twice a week, with questions welcome at any moment.</p></div>
+              </li>
+              <li class="d-flex gap-3">
+                <span class="icon-badge flex-shrink-0"><i class="bi bi-chat-square-text" aria-hidden="true"></i></span>
+                <div><h3 class="h6 fw-bold mb-1 font-serif">Get feedback within 24 hours</h3><p class="text-secondary mb-0">Your mentor comments every practice task right in the code.</p></div>
+              </li>
+              <li class="d-flex gap-3">
+                <span class="icon-badge flex-shrink-0"><i class="bi bi-award" aria-hidden="true"></i></span>
+                <div><h3 class="h6 fw-bold mb-1 font-serif">Defend your final project</h3><p class="text-secondary mb-0">Present it to the group and receive a verifiable certificate.</p></div>
+              </li>
+            </ol>
+          </div>
+
+          <!-- the next cohort: places are counted by an object in home.js -->
+          <div class="col-12 col-lg-5 reveal">
+            <aside class="surface p-4" aria-labelledby="cohort-title">
+              <span class="badge text-bg-warning mb-2">Applications open</span>
+              <h2 id="cohort-title" class="h4 fw-bold">Next cohort starts 1 December</h2>
+              <p id="places-text" class="mb-2">18 places in the evening group.</p>
+              <div id="places-progress" class="progress mb-3" role="progressbar" aria-label="Places taken" aria-valuemin="0" aria-valuemax="100">
+                <div id="places-bar" class="progress-bar bg-warning"></div>
+              </div>
+              <p class="small text-secondary">Applications close three days before the first class.</p>
+              <button id="reserve-btn" class="btn btn-primary w-100 btn-icon-spin" type="button">
+                <i class="bi bi-bookmark-star me-1" aria-hidden="true"></i> Reserve a place
+              </button>
+              <p id="reserve-message" class="small fw-semibold text-accent mt-3 mb-0" aria-live="polite"></p>
+            </aside>
+
+            <figure class="surface quote-card p-4 mt-4 mb-0">
+              <blockquote class="blockquote mb-2">
+                <p class="font-serif">“I joined to learn HTML and left with three projects in my portfolio and a junior offer.”</p>
+              </blockquote>
+              <figcaption class="small text-secondary mb-0">Aida, graduate of 2025 · HTML &amp; CSS Foundations</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= LIBRARY TEASER ========================= -->
+    <section class="section-tight" aria-labelledby="library-teaser-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="surface p-4 p-lg-5 reveal">
+          <div class="row align-items-center g-4">
+            <div class="col-12 col-lg-8">
+              <span class="eyebrow">New · Learning library</span>
+              <h2 id="library-teaser-title" class="h3 fw-bold">Stuck on a term? Look it up without leaving EduSphere</h2>
+              <p class="text-secondary mb-0">The library searches Wikipedia live, shows a short summary and lets you keep articles in your reading list.</p>
+            </div>
+            <div class="col-12 col-lg-4 text-lg-end">
+              <a class="btn btn-warning btn-lg btn-icon-spin" href="library.html?topic=Responsive%20web%20design">
+                <i class="bi bi-search me-1" aria-hidden="true"></i> Try “responsive design”
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== CTA ============================== -->
+    <section class="section" aria-labelledby="cta-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="cta-band text-center p-4 p-md-5 reveal">
+          <h2 id="cta-title" class="display-6 fw-bold">Ready to start?</h2>
+          <p class="mb-4 text-white text-opacity-75">The first live class of every course is free. No card details needed.</p>
+          <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a class="btn btn-warning btn-lg" href="signup.html">Sign up for free</a>
+            <a class="btn btn-outline-light btn-lg" href="contact.html">Ask a question</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================ FOOTER ================================ -->
+  <footer class="site-footer">
+    <div class="container-xxl px-3 px-lg-4 pt-5 pb-3">
+      <div class="row g-4">
+        <div class="col-12 col-lg-4">
+          <a class="d-inline-flex align-items-center gap-2 mb-3" href="index.html">
+            <img src="images/logo.svg" alt="" width="36" height="36">
+            <span class="brand-name fs-5">EduSphere</span>
+          </a>
+          <p class="small mb-2">
+            Online courses with live classes, a personal mentor and a real project at
+            the end of every course. Made for students in Kazakhstan who want a portfolio,
+            not just watched videos.
+          </p>
+          <p class="small mb-0"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i>Mangilik El 55/11, Astana</p>
+        </div>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Explore EduSphere">
+          <h2 class="mb-3">Explore</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="instructors.html">Instructors</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="library.html">Learning library</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="about.html">About us</a></li>
+          </ul>
+        </nav>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Your account">
+          <h2 class="mb-3">Your account</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="signup.html">Sign up</a></li>
+            <li><a href="login.html">Log in</a></li>
+            <li><a href="profile.html">My profile</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+          </ul>
+        </nav>
+
+        <div class="col-12 col-md-4 col-lg-4">
+          <h2 class="mb-3">Open lectures</h2>
+          <!-- newsletter form: validated by script.js -->
+          <form id="newsletter-form" novalidate>
+            <label for="newsletter-email" class="small mb-2">A free guest lecture every Friday. Leave your email:</label>
+            <div class="input-group">
+              <input id="newsletter-email" class="form-control" type="text" inputmode="email" autocomplete="email" placeholder="name@example.com">
+              <button class="btn btn-warning" type="submit">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <p class="footer-bottom small text-center pt-3 mt-4 mb-0">
+        &copy; 2026 EduSphere · Front-End final project by <strong>The Ethernet</strong> (SE-2510):
+        Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+      </p>
+    </div>
+  </footer>
+
+  <!-- libraries, then the shared scripts, then the script of this page -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/4.0.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

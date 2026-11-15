@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <!-- =====================================================================
+       EduSphere — online learning platform (Front-End final project)
+       Team    : The Ethernet, group SE-2510
+       Members : Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+       Page    : courses.html — Course catalogue
+       Author  : Azamat Mustafin (search and filters) · Ramil Zhunussov (catalogue)
+       On this page:
+         - Live search with suggestions and highlighting (search.js)
+         - Level / duration / sort filters saved in localStorage (courses.js)
+         - Recent searches saved in localStorage
+         - Star ratings and saved courses (heart button)
+         - Multi-step enrolment form with JavaScript validation
+       ===================================================================== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Search and filter the EduSphere course catalogue, rate courses, save favourites and enrol online.">
+  <meta name="author" content="The Ethernet: Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin">
+  <meta name="theme-color" content="#2f2a77">
+  <title>Course Catalogue — EduSphere</title>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+  <script>
+    // Applies the saved light / dark mode BEFORE the page is drawn, so it never flashes.
+    // The "js" class tells the CSS that JavaScript works (used by the reveal animations).
+    (function () {
+      var theme = 'light';
+      try {
+        theme = localStorage.getItem('edusphere-theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (error) { /* storage blocked: light mode */ }
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+  <!-- Bootstrap and Bootstrap Icons from a CDN, then our own styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============================ NAVBAR ================================
+       navbar-expand-xl: links in one row from 1200px, a hamburger below.
+       The light / dark switch stays visible on every screen size.
+       #nav-auth shows "Log in / Sign up"; script.js replaces it with the
+       user's menu when somebody is logged in.
+       ===================================================================== -->
+  <header>
+    <nav class="navbar navbar-expand-xl site-nav py-2" data-bs-theme="dark" aria-label="Main navigation">
+      <div class="container-xxl px-3 px-lg-4">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+          <img src="images/logo.svg" alt="" width="42" height="42">
+          <span class="d-flex flex-column lh-1">
+            <span class="brand-name">EduSphere</span>
+            <small class="text-warning text-uppercase brand-tagline mt-1">Learn · Practise · Grow</small>
+          </span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2 gap-sm-3 ms-auto ms-xl-3 order-xl-last">
+          <!-- light / dark mode switch (script.js) -->
+          <button class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Dark mode">
+            <i class="bi bi-sun" aria-hidden="true"></i>
+            <i class="bi bi-moon-stars" aria-hidden="true"></i>
+            <span class="theme-switch-knob" aria-hidden="true">
+              <i class="bi bi-sun-fill icon-sun"></i><i class="bi bi-moon-stars-fill icon-moon"></i>
+            </span>
+          </button>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                  aria-controls="mainNav" aria-expanded="false" aria-label="Open the menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="courses.html">Courses</a></li>
+            <li class="nav-item"><a class="nav-link" href="instructors.html">Instructors</a></li>
+            <li class="nav-item"><a class="nav-link" href="schedule.html">Schedule</a></li>
+            <li class="nav-item"><a class="nav-link" href="library.html">Library</a></li>
+            <li class="nav-item"><a class="nav-link" href="gallery.html">Gallery</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          </ul>
+          <div id="nav-auth" class="nav-auth d-flex align-items-center gap-2 mt-2 mt-xl-0">
+            <a class="btn btn-outline-light btn-sm px-3" href="login.html">Log in</a>
+            <a class="btn btn-warning btn-sm px-3" href="signup.html">Sign up</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="page-header">
+      <div class="container-xxl px-3 px-lg-4 py-4 py-lg-5">
+        <div class="row align-items-center g-4">
+          <div class="col-12 col-lg-6">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Courses</li>
+              </ol>
+            </nav>
+            <span class="eyebrow">Course catalogue</span>
+            <h1 class="display-5 fw-bold mb-3">Find the course that fits you</h1>
+            <p class="lead text-secondary mb-0 text-measure">Six project-based courses in four directions. Search by topic, filter by level and length, save the ones you like and enrol online in four short steps.</p>
+          </div>
+          <div class="col-12 col-lg-6 d-none d-md-block">
+            <img class="page-header-image w-100" src="images/banner-courses.svg" alt="Stack of books, code brackets and a graduation cap" width="960" height="300">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================== CATALOGUE ========================== -->
+    <section class="section-tight" aria-labelledby="catalogue-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <h2 id="catalogue-title" class="visually-hidden">Catalogue</h2>
+        <div class="row g-4">
+
+          <!-- filters: a sidebar on large screens, on top on phones and tablets -->
+          <div class="col-12 col-lg-4 col-xl-3">
+            <div class="surface p-3 p-sm-4 filter-panel">
+
+              <!-- search form: live filtering while typing (courses.js),
+                   suggestions and recent searches (search.js) -->
+              <form id="course-search-form" role="search" novalidate>
+                <label for="course-search" class="form-label">Search the catalogue</label>
+                <div class="search-box mb-1">
+                  <div class="input-group">
+                    <span class="input-group-text" aria-hidden="true"><i class="bi bi-search"></i></span>
+                    <input id="course-search" class="form-control" type="search" placeholder="python, design, fetch…"
+                           autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions">
+                    <button class="btn btn-primary" type="submit" aria-label="Search">Go</button>
+                  </div>
+                  <ul id="search-suggestions" class="list-group search-suggestions" role="listbox" aria-label="Suggestions" hidden></ul>
+                </div>
+              </form>
+
+              <div id="recent-searches-box" class="mt-3" hidden>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="small fw-semibold text-secondary">Recent searches</span>
+                  <button id="clear-searches" class="btn btn-link btn-sm p-0" type="button">Clear</button>
+                </div>
+                <div id="recent-searches" class="d-flex flex-wrap gap-2"></div>
+              </div>
+
+              <!-- on phones and tablets the filters fold away behind this button -->
+              <button class="btn btn-outline-primary w-100 mt-3 d-lg-none" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#filter-options" aria-expanded="false" aria-controls="filter-options">
+                <i class="bi bi-sliders me-1" aria-hidden="true"></i> Filters and sorting
+              </button>
+
+              <div id="filter-options" class="collapse d-lg-block">
+              <hr class="my-4">
+
+              <fieldset class="mb-3">
+                <legend class="form-label fs-6">Level</legend>
+                <div class="d-flex flex-wrap gap-2" id="level-filter">
+                  <input type="radio" class="btn-check" name="level" id="lvl-all" value="all" checked>
+                  <label class="btn btn-outline-primary btn-sm" for="lvl-all">All</label>
+                  <input type="radio" class="btn-check" name="level" id="lvl-beginner" value="beginner">
+                  <label class="btn btn-outline-primary btn-sm" for="lvl-beginner">Beginner</label>
+                  <input type="radio" class="btn-check" name="level" id="lvl-intermediate" value="intermediate">
+                  <label class="btn btn-outline-primary btn-sm" for="lvl-intermediate">Intermediate</label>
+                  <input type="radio" class="btn-check" name="level" id="lvl-advanced" value="advanced">
+                  <label class="btn btn-outline-primary btn-sm" for="lvl-advanced">Advanced</label>
+                </div>
+              </fieldset>
+
+              <div class="row g-3 mb-3">
+                <div class="col-6 col-lg-12">
+                  <label for="duration-filter" class="form-label">Duration</label>
+                  <select id="duration-filter" class="form-select form-select-sm">
+                    <option value="any">Any length</option>
+                    <option value="short">Up to 8 weeks</option>
+                    <option value="medium">9–12 weeks</option>
+                    <option value="long">13+ weeks</option>
+                  </select>
+                </div>
+                <div class="col-6 col-lg-12">
+                  <label for="sort-select" class="form-label">Sort by</label>
+                  <select id="sort-select" class="form-select form-select-sm">
+                    <option value="default">Recommended</option>
+                    <option value="title">Title A–Z</option>
+                    <option value="short">Shortest first</option>
+                    <option value="rating">My rating</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" role="switch" id="saved-only">
+                <label class="form-check-label" for="saved-only">Only my saved courses <i class="bi bi-heart-fill text-danger" aria-hidden="true"></i></label>
+              </div>
+
+              <button id="reset-filters" class="btn btn-outline-primary btn-sm w-100 btn-icon-spin" type="button">
+                <i class="bi bi-arrow-counterclockwise me-1" aria-hidden="true"></i> Reset all filters
+              </button>
+              <p class="small text-secondary mt-3 mb-0"><i class="bi bi-floppy me-1" aria-hidden="true"></i>Your search and filters are remembered on this device.</p>
+
+              <hr class="my-4">
+              <h3 class="h6 fw-bold">Your ratings</h3>
+              <p id="rating-summary" class="small text-secondary mb-0">Click the stars on a course to rate it.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- results -->
+          <div class="col-12 col-lg-8 col-xl-9">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+              <p id="filter-result" class="fw-semibold mb-0" aria-live="polite">Showing 6 courses</p>
+              <p id="search-result" class="small text-accent fw-semibold mb-0" aria-live="polite"></p>
+            </div>
+            <!-- courses.js builds the cards from js/data.js -->
+            <div id="course-list" class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+              <noscript><p class="col">Turn on JavaScript to see the course catalogue.</p></noscript>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== MULTI-STEP ENROLMENT ===================== -->
+    <section id="enrol" class="section-tight" aria-labelledby="wizard-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="surface p-3 p-sm-4 p-lg-5">
+          <div class="row g-4 g-lg-5">
+            <div class="col-12 col-lg-4">
+              <span class="eyebrow">Enrol online</span>
+              <h2 id="wizard-title" class="h3 fw-bold">Four short steps</h2>
+              <p class="text-secondary">Pick a course and a study format, leave your contacts and confirm. A mentor writes to you within 24 hours.</p>
+              <p id="enrol-login-hint" class="small text-secondary mb-0">
+                <i class="bi bi-lightbulb me-1" aria-hidden="true"></i>
+                <a href="login.html?next=courses.html%23enrol">Log in</a> and your details are filled in automatically, and the enrolment appears in your profile.
+              </p>
+            </div>
+
+            <div class="col-12 col-lg-8">
+              <p id="wizard-status" class="small fw-semibold text-secondary mb-2">Step 1 of 4</p>
+              <div class="progress mb-4" role="progressbar" aria-label="Enrolment progress" aria-valuemin="0" aria-valuemax="100">
+                <div id="wizard-bar" class="progress-bar bg-warning"></div>
+              </div>
+
+              <form id="enrol-form" novalidate>
+                <div class="wizard-step">
+                  <h3 class="h5 font-serif">1. Choose a course</h3>
+                  <label for="enrol-course" class="form-label">Course <span class="required-mark">*</span></label>
+                  <select id="enrol-course" class="form-select">
+                    <option value="">— Select a course —</option>
+                  </select>
+                </div>
+
+                <div class="wizard-step">
+                  <h3 class="h5 font-serif">2. Choose a study format</h3>
+                  <fieldset id="enrol-format">
+                    <legend class="form-label fs-6">Format <span class="required-mark">*</span></legend>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="format" id="format-evening" value="evening">
+                      <label class="form-check-label" for="format-evening">Evening — Mon, Wed, Fri at 19:00</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="format" id="format-weekend" value="weekend">
+                      <label class="form-check-label" for="format-weekend">Weekend — Sat and Sun at 11:00</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="format" id="format-intensive" value="intensive">
+                      <label class="form-check-label" for="format-intensive">Intensive — every weekday at 10:00</label>
+                    </div>
+                  </fieldset>
+                </div>
+
+                <div class="wizard-step">
+                  <h3 class="h5 font-serif">3. Your contacts</h3>
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <label for="enrol-name" class="form-label">Full name <span class="required-mark">*</span></label>
+                      <input id="enrol-name" class="form-control" type="text" autocomplete="name" placeholder="Aisulu Amangeldy">
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label for="enrol-email" class="form-label">Email <span class="required-mark">*</span></label>
+                      <input id="enrol-email" class="form-control" type="text" inputmode="email" autocomplete="email" placeholder="name@example.com">
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label for="enrol-phone" class="form-label">Phone <span class="required-mark">*</span></label>
+                      <input id="enrol-phone" class="form-control" type="tel" autocomplete="tel" placeholder="+7 701 234 56 78">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="wizard-step">
+                  <h3 class="h5 font-serif">4. Check and confirm</h3>
+                  <ul id="enrol-summary" class="list-group"></ul>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                  <button id="back-btn" class="btn btn-outline-primary" type="button"><i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Back</button>
+                  <button id="next-btn" class="btn btn-primary btn-arrow" type="button">Next <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i></button>
+                  <button id="confirm-btn" class="btn btn-warning" type="submit">Confirm enrolment</button>
+                  <button id="clear-btn" class="btn btn-link ms-auto" type="button">Clear form</button>
+                </div>
+              </form>
+              <p id="enrol-success" class="alert alert-success mt-4 mb-0" role="status" hidden></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= PRICING ============================ -->
+    <section class="section" aria-labelledby="plans-title">
+      <div class="container-xxl px-3 px-lg-4">
+        <div class="text-center text-measure mx-auto mb-4 reveal">
+          <span class="eyebrow">Plans</span>
+          <h2 id="plans-title" class="section-title display-6">One price per month</h2>
+          <p class="text-secondary mb-0">Cancel whenever you like. The money you already paid counts towards a bigger plan.</p>
+        </div>
+
+        <div class="row g-4 align-items-stretch">
+          <div class="col-12 col-xl-8 reveal">
+            <!-- table-responsive: the table scrolls sideways on small screens -->
+            <div class="table-responsive surface">
+              <table class="table table-hover align-middle mb-0">
+                <caption class="caption-top px-3">Comparison of the EduSphere subscription plans</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Plan</th>
+                    <th scope="col">Per month</th>
+                    <th scope="col">Courses</th>
+                    <th scope="col">Mentor support</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><th scope="row">Starter</th><td class="fw-bold text-accent text-nowrap">12 000 &#8376;</td><td>1 course of your choice</td><td>Group chat</td></tr>
+                  <tr><th scope="row">Standard</th><td class="fw-bold text-accent text-nowrap">19 000 &#8376;</td><td>3 courses in one direction</td><td>Weekly code review</td></tr>
+                  <tr><th scope="row">Pro</th><td class="fw-bold text-accent text-nowrap">27 000 &#8376;</td><td>All courses</td><td>Code review + 1-to-1 calls</td></tr>
+                  <tr><th scope="row">Team (5+)</th><td class="fw-bold text-accent text-nowrap">15 000 &#8376;</td><td>All courses</td><td>A shared mentor for the group</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-8 col-xl-4 mx-auto reveal">
+            <div class="card card-hover h-100 border-warning">
+              <div class="card-body p-4">
+                <h3 class="h5">Student discount</h3>
+                <p class="display-6 fw-bold font-serif text-accent mb-1">&minus;20%</p>
+                <p class="small text-secondary">For students of Astana IT University with a valid student card. Enter the code at your first payment.</p>
+                <div class="d-flex align-items-center justify-content-between gap-2">
+                  <code id="promo-code" class="promo-code text-body">AITU-20</code>
+                  <button class="btn btn-outline-primary btn-sm copy-btn" type="button" data-copy="#promo-code" aria-label="Copy the promo code">
+                    <i class="bi bi-clipboard" aria-hidden="true"></i> <span class="copy-label">Copy</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================ FOOTER ================================ -->
+  <footer class="site-footer">
+    <div class="container-xxl px-3 px-lg-4 pt-5 pb-3">
+      <div class="row g-4">
+        <div class="col-12 col-lg-4">
+          <a class="d-inline-flex align-items-center gap-2 mb-3" href="index.html">
+            <img src="images/logo.svg" alt="" width="36" height="36">
+            <span class="brand-name fs-5">EduSphere</span>
+          </a>
+          <p class="small mb-2">
+            Online courses with live classes, a personal mentor and a real project at
+            the end of every course. Made for students in Kazakhstan who want a portfolio,
+            not just watched videos.
+          </p>
+          <p class="small mb-0"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i>Mangilik El 55/11, Astana</p>
+        </div>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Explore EduSphere">
+          <h2 class="mb-3">Explore</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="instructors.html">Instructors</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="library.html">Learning library</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="about.html">About us</a></li>
+          </ul>
+        </nav>
+
+        <nav class="col-6 col-md-4 col-lg-2" aria-label="Your account">
+          <h2 class="mb-3">Your account</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            <li><a href="signup.html">Sign up</a></li>
+            <li><a href="login.html">Log in</a></li>
+            <li><a href="profile.html">My profile</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+          </ul>
+        </nav>
+
+        <div class="col-12 col-md-4 col-lg-4">
+          <h2 class="mb-3">Open lectures</h2>
+          <!-- newsletter form: validated by script.js -->
+          <form id="newsletter-form" novalidate>
+            <label for="newsletter-email" class="small mb-2">A free guest lecture every Friday. Leave your email:</label>
+            <div class="input-group">
+              <input id="newsletter-email" class="form-control" type="text" inputmode="email" autocomplete="email" placeholder="name@example.com">
+              <button class="btn btn-warning" type="submit">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <p class="footer-bottom small text-center pt-3 mt-4 mb-0">
+        &copy; 2026 EduSphere · Front-End final project by <strong>The Ethernet</strong> (SE-2510):
+        Ramil Zhunussov, Maxim Batyushkin, Azamat Mustafin
+      </p>
+    </div>
+  </footer>
+
+  <!-- libraries, then the shared scripts, then the script of this page -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/4.0.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/courses.js"></script>
+</body>
+</html>
